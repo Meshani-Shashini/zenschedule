@@ -19,7 +19,7 @@
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useMemo, useEffect } = React;
-const mk = (d) => ({ size = 24, color = "currentColor" }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: d }} />;
+const mk = (d) => ({ size = 24, color = "currentColor" }) => React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", dangerouslySetInnerHTML: { __html: d } });
 const CalendarClock = mk('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="16" r="3"/><path d="M12 15v1.5l1 .5"/>');
 const Terminal = mk('<path d="m4 17 6-6-6-6M12 19h8"/>');
 const HeartPulse = mk('<path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/><path d="M3.2 12h4.4l1.4-2 2 4 1.4-2h5.4"/>');
@@ -42,7 +42,7 @@ const ChevronLeft = mk('<path d="m15 18-6-6 6-6"/>');
 const ChevronRight = mk('<path d="m9 18 6-6-6-6"/>');
 const CalendarDays = mk('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>');
 const List = mk('<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>');
-
+ 
 const C = { bg: "#0D0F12", card: "#181D24", line: "#22272E", blue: "#0084FF", em: "#10B981", am: "#F59E0B", red: "#EF4444", t1: "#F3F5F7", t2: "#8A93A3", t3: "#5C6472" };
 const CATS = ["Personal", "Official", "Health", "Fitness", "Home", "Finance", "Maintenance", "Entertainment"];
 const CODES = { PT: "Personal", PS: "Personal", OT: "Official", OM: "Official", HC: "Health", FN: "Fitness", HM: "Home", FI: "Finance", MT: "Maintenance", EN: "Entertainment" };
@@ -54,82 +54,82 @@ const TODAY_STR = NOW.getFullYear() + "-" + String(NOW.getMonth() + 1).padStart(
 const MEALS = [["Breakfast", 0], ["Lunch", 300], ["Dinner", 660], ["Bedtime", 900]];
 const fmt = (m) => { m = ((m % 1440) + 1440) % 1440; return String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0"); };
 const all7 = [1, 1, 1, 1, 1, 1, 1];
-
+ 
 const MEDS = [
-  { id: "m1", name: "Metformin", dose: "500 mg", meal: "Breakfast", off: 0, day: 28, total: 30, refill: true, fasting: false },
-  { id: "m2", name: "Lisinopril", dose: "10 mg", meal: "Breakfast", off: -30, day: 12, total: 30, refill: false, fasting: false },
-  { id: "m3", name: "Atorvastatin", dose: "20 mg", meal: "Dinner", off: 0, day: 29, total: 30, refill: false, fasting: true },
-  { id: "m4", name: "Melatonin", dose: "3 mg", meal: "Bedtime", off: -15, day: 6, total: 30, refill: false, fasting: false },
+{ id: "m1", name: "Metformin", dose: "500 mg", meal: "Breakfast", off: 0, day: 28, total: 30, refill: true, fasting: false },
+{ id: "m2", name: "Lisinopril", dose: "10 mg", meal: "Breakfast", off: -30, day: 12, total: 30, refill: false, fasting: false },
+{ id: "m3", name: "Atorvastatin", dose: "20 mg", meal: "Dinner", off: 0, day: 29, total: 30, refill: false, fasting: true },
+{ id: "m4", name: "Melatonin", dose: "3 mg", meal: "Bedtime", off: -15, day: 6, total: 30, refill: false, fasting: false },
 ];
 const TASKS0 = [
-  { id: "PT001", cat: "Personal", title: "Renew passport form", notes: "Bring 2 photos", t: 600, flex: false },
-  { id: "OT001", cat: "Official", title: "Submit weekly report", notes: "Send to team lead", t: 690, flex: false },
-  { id: "HM001", cat: "Home", title: "Water the plants", notes: "Balcony and hall", t: 780, flex: true },
-  { id: "FI001", cat: "Finance", title: "Pay electricity bill", notes: "Due this week", t: 840, flex: true },
-  { id: "FN001", cat: "Fitness", title: "Evening run", notes: "5 km easy pace", t: 1050, flex: false },
+{ id: "PT001", cat: "Personal", title: "Renew passport form", notes: "Bring 2 photos", t: 600, flex: false },
+{ id: "OT001", cat: "Official", title: "Submit weekly report", notes: "Send to team lead", t: 690, flex: false },
+{ id: "HM001", cat: "Home", title: "Water the plants", notes: "Balcony and hall", t: 780, flex: true },
+{ id: "FI001", cat: "Finance", title: "Pay electricity bill", notes: "Due this week", t: 840, flex: true },
+{ id: "FN001", cat: "Fitness", title: "Evening run", notes: "5 km easy pace", t: 1050, flex: false },
 ].map((t) => ({ ...t, date: TODAY_STR, pri: "Medium" }));
 const BACKLOG0 = [
-  { id: "BK001", cat: "Maintenance", title: "Service AC filters", notes: "" },
-  { id: "BK002", cat: "Entertainment", title: "Watch the documentary", notes: "" },
+{ id: "BK001", cat: "Maintenance", title: "Service AC filters", notes: "" },
+{ id: "BK002", cat: "Entertainment", title: "Watch the documentary", notes: "" },
 ];
 const TX = [["Salary", 85000, 1], ["Groceries", 12400, 0], ["Electricity", 6800, 0], ["Freelance", 15000, 1]];
-
+ 
 const Card = ({ children, className = "", ...p }) => <div className={`rounded-2xl p-3 zs-card ${className}`} style={{ background: C.card }} {...p}>{children}</div>;
 const Chip = ({ on, children, ...p }) => (
-  <button {...p} className="shrink-0 rounded-full zs-chip px-3 py-1.5 text-xs font-medium border" style={{ background: on ? C.blue : "transparent", borderColor: on ? C.blue : C.line, color: on ? "#fff" : C.t2 }}>{children}</button>
+<button {...p} className="shrink-0 rounded-full zs-chip px-3 py-1.5 text-xs font-medium border" style={{ background: on ? C.blue : "transparent", borderColor: on ? C.blue : C.line, color: on ? "#fff" : C.t2 }}>{children}</button>
 );
 const Empty = ({ children }) => <p className="text-center text-sm py-6" style={{ color: C.t3 }}>{children}</p>;
 const Bar = ({ pct, color }) => <div className="h-2 rounded-full overflow-hidden" style={{ background: C.line }}><div className="h-full rounded-full" style={{ width: `${Math.min(100, pct)}%`, background: color }} /></div>;
-
+ 
 function parse(text, existing) {
-  const m = text.trim().match(/^=([A-Za-z]{2})\s*(.*)$/s);
-  if (!m) return null;
-  const code = m[1].toUpperCase();
-  if (!CODES[code]) return null;
-  const parts = m[2].split(",").map((s) => s.trim()).filter(Boolean);
-  const rest = parts.slice(1).join(" ");
-  const date = rest.match(/\d{4}-\d{2}-\d{2}/)?.[0];
-  const time = rest.match(/\b\d{1,2}:\d{2}\b/)?.[0];
-  const pr = rest.match(/(high|medium|low)\s*priority/i)?.[1];
-  const n = existing.filter((x) => x.id.startsWith(code)).length + 1;
-  return { code, cat: CODES[code], title: parts[0] || "", date, time, pr, id: code + String(n).padStart(3, "0") };
+const m = text.trim().match(/^=([A-Za-z]{2})\s*(.*)$/s);
+if (!m) return null;
+const code = m[1].toUpperCase();
+if (!CODES[code]) return null;
+const parts = m[2].split(",").map((s) => s.trim()).filter(Boolean);
+const rest = parts.slice(1).join(" ");
+const date = rest.match(/\d{4}-\d{2}-\d{2}/)?.[0];
+const time = rest.match(/\b\d{1,2}:\d{2}\b/)?.[0];
+const pr = rest.match(/(high|medium|low)\s*priority/i)?.[1];
+const n = existing.filter((x) => x.id.startsWith(code)).length + 1;
+return { code, cat: CODES[code], title: parts[0] || "", date, time, pr, id: code + String(n).padStart(3, "0") };
 }
-
+ 
 const loadTess = () => window.Tesseract ? Promise.resolve(window.Tesseract) : new Promise((res, rej) => { const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js"; s.onload = () => res(window.Tesseract); s.onerror = () => rej(new Error("OCR engine could not load. Check your internet connection.")); document.head.appendChild(s); });
 const scale = (file, w) => new Promise((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const im = new Image(); im.onerror = () => rej(new Error("Could not open this image.")); im.onload = () => { const k = Math.min(1, w / im.width); const c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height); res(c.toDataURL("image/jpeg", 0.85)); }; im.src = r.result; }; r.readAsDataURL(file); });
 function analyze(text, mode) {
-  const lines = text.split("\n").map((l) => l.trim()).filter((l) => l.length > 1);
-  if (!lines.length) return { code: mode === "rx" ? "HC" : mode === "receipt" ? "FI" : "OT", title: mode === "rx" ? "Doctor consultation note" : mode === "receipt" ? "Scanned receipt" : "Scanned document", summary: "No readable text found in the image" };
-  const low = text.toLowerCase();
-  const rxR = /\b(rx|prescri\w*|tablets?|capsules?|mg|mcg|dose|daily|twice|doctor|dr\.?|patient|diagnos\w*|follow.?up|refill)\b/g;
-  const rcR = /\b(receipt|invoice|total|subtotal|amount|cash|change|tax|vat|qty|bill|paid)\b/g;
-  const a = (low.match(rxR) || []).length, b = (low.match(rcR) || []).length;
-  const type = mode !== "auto" ? mode : a > b ? "rx" : b > 0 ? "receipt" : "doc";
-  const date = (text.match(/\b(\d{4}[-\/.]\d{1,2}[-\/.]\d{1,2}|\d{1,2}[-\/.]\d{1,2}[-\/.]\d{2,4})\b/) || [])[1];
-  if (type === "receipt") {
-    const tl = lines.filter((l) => /total|amount|due|paid/i.test(l) && !/sub/i.test(l));
-    let amt = (tl.map((l) => l.match(/\d[\d,]*\.\d{2}/g)).filter(Boolean).pop() || []).pop();
-    if (!amt) amt = (text.match(/\d[\d,]*\.\d{2}/g) || []).sort((x, y) => parseFloat(y.replace(/,/g, "")) - parseFloat(x.replace(/,/g, "")))[0];
-    return { code: "FI", title: "Scanned receipt" + (amt ? " · " + amt : ""), summary: [lines[0], amt && "Total " + amt, date].filter(Boolean).join(" · ") };
-  }
-  if (type === "rx") {
-    const meds = lines.filter((l) => /\d+\s*(mg|mcg|ml|g)\b|\b(tab|cap)/i.test(l)).slice(0, 4);
-    const fu = lines.find((l) => /follow.?up|review|next visit/i.test(l));
-    return { code: "HC", title: "Doctor consultation note", summary: [...meds, fu, date].filter(Boolean).join(" · ") || lines.slice(0, 3).join(" · ") };
-  }
-  return { code: "OT", title: "Scanned document", summary: lines.slice(0, 3).join(" · ") };
+const lines = text.split("\n").map((l) => l.trim()).filter((l) => l.length > 1);
+if (!lines.length) return { code: mode === "rx" ? "HC" : mode === "receipt" ? "FI" : "OT", title: mode === "rx" ? "Doctor consultation note" : mode === "receipt" ? "Scanned receipt" : "Scanned document", summary: "No readable text found in the image" };
+const low = text.toLowerCase();
+const rxR = /\b(rx|prescri\w*|tablets?|capsules?|mg|mcg|dose|daily|twice|doctor|dr\.?|patient|diagnos\w*|follow.?up|refill)\b/g;
+const rcR = /\b(receipt|invoice|total|subtotal|amount|cash|change|tax|vat|qty|bill|paid)\b/g;
+const a = (low.match(rxR) || []).length, b = (low.match(rcR) || []).length;
+const type = mode !== "auto" ? mode : a > b ? "rx" : b > 0 ? "receipt" : "doc";
+const date = (text.match(/\b(\d{4}[-\/.]\d{1,2}[-\/.]\d{1,2}|\d{1,2}[-\/.]\d{1,2}[-\/.]\d{2,4})\b/) || [])[1];
+if (type === "receipt") {
+const tl = lines.filter((l) => /total|amount|due|paid/i.test(l) && !/sub/i.test(l));
+let amt = (tl.map((l) => l.match(/\d[\d,]*\.\d{2}/g)).filter(Boolean).pop() || []).pop();
+if (!amt) amt = (text.match(/\d[\d,]*\.\d{2}/g) || []).sort((x, y) => parseFloat(y.replace(/,/g, "")) - parseFloat(x.replace(/,/g, "")))[0];
+return { code: "FI", title: "Scanned receipt" + (amt ? " · " + amt : ""), summary: [lines[0], amt && "Total " + amt, date].filter(Boolean).join(" · ") };
+}
+if (type === "rx") {
+const meds = lines.filter((l) => /\d+\s*(mg|mcg|ml|g)\b|\b(tab|cap)/i.test(l)).slice(0, 4);
+const fu = lines.find((l) => /follow.?up|review|next visit/i.test(l));
+return { code: "HC", title: "Doctor consultation note", summary: [...meds, fu, date].filter(Boolean).join(" · ") || lines.slice(0, 3).join(" · ") };
+}
+return { code: "OT", title: "Scanned document", summary: lines.slice(0, 3).join(" · ") };
 }
 const addDays = (iso, n) => { const d = new Date(iso + "T00:00:00"); d.setDate(d.getDate() + n); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
 const detectPlatform = () => {
-  // Native shells first: Capacitor / Cordova use the real OS status bar, so no mock is drawn.
-  const cap = window.Capacitor;
-  if (cap && cap.getPlatform) { const p = cap.getPlatform(); if (p === "ios" || p === "android") return p; }
-  const cp = window.cordova && window.device && String(window.device.platform || "").toLowerCase();
-  if (cp === "ios" || cp === "android") return cp;
-  const ua = navigator.userAgent || "";
-  if (/iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) return "ios";
-  if (/Android/i.test(ua)) return "android";
-  return null;
+// Native shells first: Capacitor / Cordova use the real OS status bar, so no mock is drawn.
+const cap = window.Capacitor;
+if (cap && cap.getPlatform) { const p = cap.getPlatform(); if (p === "ios" || p === "android") return p; }
+const cp = window.cordova && window.device && String(window.device.platform || "").toLowerCase();
+if (cp === "ios" || cp === "android") return cp;
+const ua = navigator.userAgent || "";
+if (/iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) return "ios";
+if (/Android/i.test(ua)) return "android";
+return null;
 };
 const REAL = detectPlatform();
 const FONTS = { ios: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif', android: 'Roboto, "Noto Sans", system-ui, sans-serif' };
@@ -147,523 +147,574 @@ const PCSS = `
 .android button:active::after{transform:scale(0);opacity:1;transition:0s}
 `;
 const StatusBar = ({ plat, time }) => {
-  const ios = plat === "ios";
-  return (
-    <div className="relative flex items-center justify-between" style={{ height: "var(--sb)", padding: ios ? "8px 28px 0 32px" : "0 18px", color: C.t1 }}>
-      <span className="font-semibold tabular-nums leading-none" style={{ fontSize: ios ? 15 : 13 }}>{time}</span>
-      <span className="absolute left-1/2 rounded-full" style={{ transform: "translateX(-50%)", top: ios ? 11 : 9, width: ios ? 112 : 12, height: ios ? 32 : 12, background: "#000" }} />
-      <div className="flex items-center shrink-0" style={{ gap: 6 }}>
-        <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor" aria-label="Signal"><rect x="0" y="7" width="3" height="4" rx=".8" /><rect x="4.7" y="5" width="3" height="6" rx=".8" /><rect x="9.4" y="2.5" width="3" height="8.5" rx=".8" /><rect x="14" y="0" width="3" height="11" rx=".8" /></svg>
-        <span className="font-semibold leading-none" style={{ fontSize: ios ? 12 : 11 }}>5G</span>
-        <svg width="26" height="12" viewBox="0 0 26 12" fill="none" aria-label="Battery"><rect x=".5" y=".5" width="22" height="11" rx="3.2" stroke="currentColor" opacity=".45" /><rect x="2" y="2" width="19" height="8" rx="2" fill="currentColor" /><path d="M24 4v4c.8-.3 1.5-1.1 1.5-2S24.8 4.3 24 4z" fill="currentColor" opacity=".5" /></svg>
-      </div>
-    </div>
-  );
-};
-const Sheet = ({ title, onClose, children }) => (
-  <div className="absolute inset-0 z-30 flex items-end" style={{ background: "#000A" }}>
-    <div className="w-full rounded-t-3xl p-4 space-y-3 max-h-[85%] overflow-y-auto" style={{ background: C.bg, border: `1px solid ${C.line}`, paddingBottom: "calc(var(--sab) + 16px)" }}>
-      <div className="flex justify-between items-center"><h3 className="font-semibold">{title}</h3><button onClick={onClose} aria-label="Close"><X size={20} color={C.t2} /></button></div>
-      {children}
-    </div>
-  </div>
+const ios = plat === "ios";
+return (
+<div className="relative flex items-center justify-between" style={{ height: "var(--sb)", padding: ios ? "8px 28px 0 32px" : "0 18px", color: C.t1 }}>
+<span className="font-semibold tabular-nums leading-none" style={{ fontSize: ios ? 15 : 13 }}>{time}</span>
+<span className="absolute left-1/2 rounded-full" style={{ transform: "translateX(-50%)", top: ios ? 11 : 9, width: ios ? 112 : 12, height: ios ? 32 : 12, background: "#000" }} />
+<div className="flex items-center shrink-0" style={{ gap: 6 }}>
+<svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor" aria-label="Signal"><rect x="0" y="7" width="3" height="4" rx=".8" /><rect x="4.7" y="5" width="3" height="6" rx=".8" /><rect x="9.4" y="2.5" width="3" height="8.5" rx=".8" /><rect x="14" y="0" width="3" height="11" rx=".8" /></svg>
+<span className="font-semibold leading-none" style={{ fontSize: ios ? 12 : 11 }}>5G</span>
+<svg width="26" height="12" viewBox="0 0 26 12" fill="none" aria-label="Battery"><rect x=".5" y=".5" width="22" height="11" rx="3.2" stroke="currentColor" opacity=".45" /><rect x="2" y="2" width="19" height="8" rx="2" fill="currentColor" /><path d="M24 4v4c.8-.3 1.5-1.1 1.5-2S24.8 4.3 24 4z" fill="currentColor" opacity=".5" /></svg>
+</div>
+</div>
 );
-
+};
+const LABELS = { title: "Title", notes: "Notes", date: "Date", time: "Time", qty: "Quantity" };
+// Reusable checks: each takes (value, { label, cat, data, ctx, ...ruleParams }) and returns an error string or null.
+const CHECKS = {
+required: (v, o) => (String(v ?? "").trim() ? null : o.label + " is required"),
+length: (v, o) => { const n = String(v ?? "").trim().length; return n && (n < o.min || n > o.max) ? o.label + " must be " + (o.min ? o.min + "–" : "at most ") + o.max + " characters" : null; },
+pattern: (v, o) => (String(v ?? "").trim() && !o.re.test(v) ? o.label + " " + o.msg : null),
+range: (v, o) => (v === "" || v == null ? null : Number.isInteger(+v) && +v >= o.min && +v <= o.max ? null : o.label + " must be a whole number from " + o.min + " to " + o.max),
+dateValid: (v, o) => (!v || (/^\d{4}-\d{2}-\d{2}$/.test(v) && addDays(v, 0) === v) ? null : o.label + " is not a valid date"),
+dateNotPast: (v, o) => (!v || (o.ctx.orig && o.ctx.orig.date === v) || v >= o.ctx.today ? null : o.label + " cannot be in the past"),
+timeNotPast: (v, o) => { const d = o.data.date || o.ctx.today; return v == null || d !== o.ctx.today || v >= o.ctx.nowMin || (o.ctx.orig && o.ctx.orig.t === v && o.ctx.orig.date === d) ? null : o.label + " has already passed today"; },
+unique: (v, o) => { const t = String(v ?? "").trim().toLowerCase(); return t && o.ctx.items.some((x) => x.id !== o.ctx.id && x.cat === o.cat && x.title.trim().toLowerCase() === t && (x.date || "") === (o.data.date || "")) ? o.label + " already exists for this date" : null; },
+};
+// Rules per category. Personal is defined first; other categories use the default rules until they are configured.
+const RULES = {
+Personal: {
+title: [["required"], ["length", { min: 3, max: 60 }], ["pattern", { re: /[A-Za-z\u00C0-\uFFFF]/, msg: "must contain letters" }], ["unique"]],
+notes: [["length", { min: 0, max: 120 }]],
+date: [["dateValid"], ["dateNotPast"]],
+time: [["timeNotPast"]],
+qty: [["range", { min: 1, max: 99 }]],
+},
+default: { title: [["required"], ["length", { min: 1, max: 80 }]], notes: [["length", { min: 0, max: 200 }]], date: [["dateValid"]] },
+};
+const validate = (cat, data, ctx) => {
+const rules = RULES[cat] || RULES.default, errs = {};
+for (const f of Object.keys(rules)) for (const [name, p] of rules[f]) { const e = CHECKS[name](data[f], { ...p, label: LABELS[f], cat, data, ctx }); if (e) { errs[f] = e; break; } }
+return errs;
+};
+const Err = ({ m }) => (m ? <p className="text-[11px]" style={{ color: C.red }}>{m}</p> : null);
+const Sheet = ({ title, onClose, children }) => (
+<div className="absolute inset-0 z-30 flex items-end" style={{ background: "#000A" }}>
+<div className="w-full rounded-t-3xl p-4 space-y-3 max-h-[85%] overflow-y-auto" style={{ background: C.bg, border: `1px solid ${C.line}`, paddingBottom: "calc(var(--sab) + 16px)" }}>
+<div className="flex justify-between items-center"><h3 className="font-semibold">{title}</h3><button onClick={onClose} aria-label="Close"><X size={20} color={C.t2} /></button></div>
+{children}
+</div>
+</div>
+);
+ 
 function App() {
-  const [tab, setTab] = useState("agenda");
-  const [plat, setPlat] = useState(REAL || "ios");
-  const [shift, setShift] = useState(0);
-  const [done, setDone] = useState({});
-  const [freq, setFreq] = useState(() => Object.fromEntries(MEDS.map((m) => [m.id, m.id === "m4" ? [1, 1, 1, 1, 1, 0, 0] : all7])));
-  const [backlog, setBacklog] = useState(BACKLOG0);
-  const [extras, setExtras] = useState(TASKS0);
-  const [cli, setCli] = useState("");
-  const [aCat, setACat] = useState(null);
-  const [area, setArea] = useState(null);
-  const [drawer, setDrawer] = useState(true);
-  const [consult, setConsult] = useState(null);
-  const [consultState, setConsultState] = useState({});
-  const [cForm, setCForm] = useState({ follow: null, note: "" });
-  const [manual, setManual] = useState(false);
-  const [mCode, setMCode] = useState("PT");
-  const [mTitle, setMTitle] = useState("");
-  const [mNum, setMNum] = useState("");
-  const [mNotes, setMNotes] = useState("");
-  const [mDate, setMDate] = useState(TODAY_STR);
-  const [mHH, setMHH] = useState("09");
-  const [mMM, setMMM] = useState("00");
-  const [mPri, setMPri] = useState("Medium");
-  const [mSched, setMSched] = useState(true);
-  const [mKeys, setMKeys] = useState(false);
-  const [toast, setToast] = useState("");
-  const [scan, setScan] = useState(null);
-  const [openB, setOpenB] = useState(null);
-  const [q, setQ] = useState("");
-  const [sortBy, setSortBy] = useState("time");
-  const [compact, setCompact] = useState(false);
-  const [ed, setEd] = useState(null);
-  const [off, setOff] = useState({});
-  const [secs, setSecs] = useState(false);
-  const [selDate, setSelDate] = useState(TODAY_STR);
-  const [cal, setCal] = useState(null);
-  const [mMode, setMMode] = useState("form");
-  const [clock, setClock] = useState(new Date());
-  useEffect(() => { const i = setInterval(() => setClock(new Date()), 15000); return () => clearInterval(i); }, []);
-
-  const tasks = useMemo(() => [...extras].sort((a, b) => a.t - b.t), [extras]);
-  const allItems = [...tasks, ...backlog];
-  const anchors = useMemo(() => Object.fromEntries(MEALS.map(([n, o]) => [n, 480 + shift + o])), [shift]);
-  const doses = useMemo(() => MEDS.map((m) => ({ ...m, at: anchors[m.meal] + m.off })), [anchors]);
-  const todayDoses = useMemo(() => doses.filter((m) => freq[m.id][(new Date(selDate + "T00:00:00").getDay() + 6) % 7]), [doses, freq, selDate]);
-  const mealCards = useMemo(() => MEALS.map(([n]) => ({ n, items: todayDoses.filter((d) => d.meal === n) })).filter((x) => x.items.length), [todayDoses]);
-  const todayTasks = useMemo(() => tasks.filter((t) => t.date === selDate && !off[t.cat]), [tasks, off, selDate]);
-  const vBacklog = useMemo(() => backlog.filter((b) => !off[b.cat]), [backlog, off]);
-  const secCats = CATS.map((c) => [c, allItems.filter((t) => t.cat === c).length + (c === "Health" ? MEDS.length : 0)]).filter((x) => x[1]);
-  const agendaCats = useMemo(() => CATS.map((c) => [c, todayTasks.filter((t) => t.cat === c && !done[t.id]).length, todayTasks.filter((t) => t.cat === c).length]).filter((x) => x[2]), [todayTasks, done]);
-  const selCat = agendaCats.some((x) => x[0] === aCat) ? aCat : null;
-  const shown = todayTasks.filter((t) => !selCat || t.cat === selCat);
-  const agendaDates = [...new Set(shown.map((t) => t.date))].sort();
-  const areaTiles = useMemo(() => CATS.map((c) => [c, allItems.filter((t) => t.cat === c).length]).filter((x) => x[1] && !off[x[0]]), [tasks, backlog, off]);
-  const selArea = areaTiles.some((x) => x[0] === area) ? area : null;
-  const PRI = { High: 0, Medium: 1, Low: 2 };
-  const areaList = useMemo(() => {
-    const s = q.trim().toLowerCase();
-    const tk = (t) => (t.t != null ? t.date + fmt(t.t) : "9999");
-    const cmp = { time: (a, b) => tk(a).localeCompare(tk(b)), priority: (a, b) => PRI[a.pri || "Medium"] - PRI[b.pri || "Medium"] || tk(a).localeCompare(tk(b)), category: (a, b) => a.cat.localeCompare(b.cat) || tk(a).localeCompare(tk(b)) }[sortBy];
-    return [...tasks, ...backlog].filter((t) => !off[t.cat] && (!selArea || t.cat === selArea) && (!s || t.title.toLowerCase().includes(s) || t.id.toLowerCase().includes(s))).sort(cmp);
-  }, [tasks, backlog, selArea, q, sortBy, off]);
-  const preview = parse(cli, allItems);
-
-  const flash = (m) => { setToast(m); setTimeout(() => setToast(""), 2600); };
-  const toMin = (s) => { const m = s && s.match(/^(\d{1,2}):(\d{2})$/); if (!m) return null; const h = +m[1], n = +m[2]; return h < 24 && n < 60 ? h * 60 + n : null; };
-  const create = ({ code, title, notes = "", date, time, pri, extra = {} }) => {
-    const cat = CODES[code];
-    const p = pri ? pri[0].toUpperCase() + pri.slice(1).toLowerCase() : "Medium";
-    if (time != null) {
-      const id = code + String(allItems.filter((x) => x.id.startsWith(code)).length + 1).padStart(3, "0");
-      setExtras((e) => [...e, { id, cat, title, notes, t: time, flex: false, date: date || selDate, pri: p }]);
-      flash(id + " scheduled" + ((date || selDate) !== TODAY_STR ? " on " + (date || selDate) : " today") + " at " + fmt(time));
-    } else {
-      const id = "BK" + String(Math.max(0, ...allItems.filter((x) => x.id.startsWith("BK")).map((b) => +b.id.slice(2))) + 1).padStart(3, "0");
-      setBacklog((b) => [...b, { id, cat, title, notes: notes || (date ? "Due " + date : ""), pri: p, ...extra }]);
-      flash(id + " saved to backlog");
-    }
-  };
-  const addBacklog = (cat, title, notes = "") => create({ code: "OT", title, notes });
-  const schedule = (item) => {
-    const used = new Set(tasks.filter((t) => t.date === selDate).map((t) => t.t));
-    let t = 720;
-    while (used.has(t)) t += 30;
-    setExtras((e) => [...e, { ...item, t, flex: true, date: selDate, pri: item.pri || "Medium" }]);
-    setBacklog((b) => b.filter((x) => x.id !== item.id));
-  };
-  const runCli = () => {
-    if (preview) { if (!preview.title) return; create({ code: preview.code, title: preview.title, date: preview.date, time: toMin(preview.time), pri: preview.pr }); }
-    else if (cli.trim()) create({ code: "PT", title: cli.trim() });
-    else return;
-    setCli("");
-  };
-  const confirmManual = () => {
-    if (!mTitle.trim()) return;
-    create({ code: mCode, title: mTitle.trim(), notes: [mNotes.trim(), mNum && "Qty " + mNum].filter(Boolean).join(" · "), date: mDate, time: mSched ? +mHH * 60 + +mMM : null, pri: mPri });
-    setManual(false); setMTitle(""); setMNotes(""); setMNum(""); setMCode("PT"); setMPri("Medium"); setMSched(true); setMKeys(false); setMDate(TODAY_STR);
-  };
-  const openEd = (item, mode) => setEd({ item, mode, title: item.title, notes: item.notes || "", cat: item.cat, pri: item.pri || "Medium", date: item.date || TODAY_STR, hh: item.t != null ? fmt(item.t).slice(0, 2) : "09", mm: item.t != null ? String(Math.floor(+fmt(item.t).slice(3) / 5) * 5).padStart(2, "0") : "00", sched: item.t != null || mode === "resched" });
-  const saveEdit = () => {
-    const { item, title, notes, cat, pri, date, hh, mm, sched } = ed;
-    if (!title.trim()) return;
-    const n = { ...item, title: title.trim(), notes, cat, pri, date };
-    const isTask = item.t != null;
-    if (sched) {
-      n.t = +hh * 60 + +mm; n.flex = false; n.date = date || TODAY_STR;
-      if (isTask) setExtras((e) => e.map((x) => (x.id === item.id ? n : x)));
-      else { setBacklog((b) => b.filter((x) => x.id !== item.id)); setExtras((e) => [...e, n]); }
-    } else {
-      delete n.t; delete n.flex;
-      if (isTask) { setExtras((e) => e.filter((x) => x.id !== item.id)); setBacklog((b) => [...b, n]); }
-      else setBacklog((b) => b.map((x) => (x.id === item.id ? n : x)));
-    }
-    setEd(null); flash(item.id + (sched ? " scheduled for " + n.date + " " + fmt(n.t) : " moved to backlog"));
-  };
-  const onFile = async (e) => {
-    const f = e.target.files[0]; e.target.value = "";
-    if (!f) return;
-    setScan({ stage: "busy", mode: scan.mode, progress: 0 });
-    try {
-      const big = await scale(f, 1600), small = await scale(f, 160);
-      const T = await loadTess();
-      const { data } = await T.recognize(big, "eng", { logger: (m) => { if (m.status === "recognizing text") setScan((s) => ({ ...s, progress: Math.round(m.progress * 100) })); } });
-      const text = data.text.trim();
-      setScan((s) => ({ ...s, stage: "done", img: small, text, res: analyze(text, s.mode) }));
-    } catch (err) { setScan((s) => ({ ...s, stage: "error", err: err.message || "Could not read this image." })); }
-  };
-  const saveScan = () => {
-    create({ code: scan.res.code, title: scan.res.title, notes: scan.res.summary, extra: { text: scan.text, img: scan.img } });
-    setScan(null); setTab("agenda"); setDrawer(true);
-  };
-  const press = (k) => setMNum((v) => (k === "C" ? "" : k === "⌫" ? v.slice(0, -1) : (v + k).slice(0, 8)));
-
-  const ios = plat === "ios";
-  const frame = !REAL;
-  const glass = ios ? { background: "rgba(13,15,18,.72)", backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)" } : { background: "#181D24" };
-  const topBar = { background: C.bg, zIndex: 25, borderBottom: ios ? "0.5px solid rgba(255,255,255,.1)" : "none", boxShadow: ios ? "none" : "0 2px 6px rgba(0,0,0,.55)" };
-  const navBar = { ...glass, zIndex: 25, height: "calc(var(--nh) + var(--sab))", borderTop: ios ? "0.5px solid rgba(255,255,255,.1)" : "none", boxShadow: ios ? "none" : "0 -2px 8px rgba(0,0,0,.5)" };
-  const vars = { "--sb": frame ? (ios ? "54px" : "30px") : "env(safe-area-inset-top, 0px)", "--hh": ios ? "48px" : "56px", "--nh": ios ? "50px" : "64px", "--sab": frame ? (ios ? "24px" : "14px") : "env(safe-area-inset-bottom, 0px)", "--top": "calc(var(--sb) + var(--hh))" };
-  const rootStyle = frame ? { ...vars, width: 390, height: 784, background: C.bg, borderRadius: ios ? 48 : 30, border: (ios ? 8 : 6) + "px solid #1a1d22" } : { ...vars, position: "fixed", inset: 0, background: C.bg };
-  const navs = [["agenda", "Agenda", CalendarClock], ["cli", "CLI Add", Terminal], ["health", "Health", HeartPulse], ["areas", "Areas", LayoutGrid]];
-  const hh = String(clock.getHours()).padStart(2, "0") + ":" + String(clock.getMinutes()).padStart(2, "0");
-
-  const TaskRow = ({ t }) => (
-    <button onClick={() => setDone((d) => ({ ...d, [t.id]: !d[t.id] }))} className="w-full flex gap-3 text-left">
-      <span className="w-11 text-xs pt-3 tabular-nums" style={{ color: C.t2 }}>{fmt(t.t)}</span>
-      <span className="self-stretch" style={{ borderLeft: `3px ${t.flex ? "dashed" : "solid"} ${done[t.id] ? C.em : C.blue}` }} />
-      <Card className="flex-1 flex items-center gap-3">
-        <div className="flex-1 min-w-0">
-          <span className="text-[10px] font-semibold" style={{ color: C.blue }}>{t.id}</span>{t.pri === "High" && <span className="text-[10px] font-semibold ml-1.5" style={{ color: C.red }}>High</span>}
-          <p className="text-sm" style={{ color: done[t.id] ? C.t3 : C.t1, textDecoration: done[t.id] ? "line-through" : "none" }}>{t.title}</p>
-          {t.notes && <p className="text-xs" style={{ color: C.t3 }}>{t.notes}</p>}
-        </div>
-        <span className="w-6 h-6 rounded-full border flex items-center justify-center" style={{ borderColor: done[t.id] ? C.em : C.line, background: done[t.id] ? C.em : "transparent" }}>{done[t.id] && <Check size={14} color="#fff" />}</span>
-      </Card>
-    </button>
-  );
-
-  const dateBar = (
-    <div className="flex items-center gap-1 pt-1 pb-2">
-      <button onClick={() => setSelDate(addDays(selDate, -1))} aria-label="Previous day" className="w-6 h-12 shrink-0 rounded-lg flex items-center justify-center" style={{ background: C.card, color: C.t2 }}><ChevronLeft size={16} /></button>
-      <div className="flex-1 min-w-0 flex gap-1">
-        {[-3, -2, -1, 0, 1, 2, 3].map((o) => {
-          const d = addDays(selDate, o), on = d === selDate, has = tasks.some((t) => t.date === d && !off[t.cat]);
-          return (
-            <button key={d} onClick={() => setSelDate(d)} className="flex-1 min-w-0 h-12 rounded-xl flex flex-col items-center justify-center" style={{ background: on ? C.blue : C.card, color: on ? "#fff" : C.t2 }}>
-              <span className="text-[9px] uppercase leading-none">{DAYS[(new Date(d + "T00:00:00").getDay() + 6) % 7]}</span>
-              <span className="text-sm font-semibold tabular-nums leading-tight" style={{ color: on ? "#fff" : d === TODAY_STR ? C.blue : C.t1 }}>{d.slice(8)}</span>
-              <span className="w-1 h-1 rounded-full" style={{ background: has ? (on ? "#fff" : C.em) : "transparent" }} />
-            </button>
-          );
-        })}
-      </div>
-      <button onClick={() => setSelDate(addDays(selDate, 1))} aria-label="Next day" className="w-6 h-12 shrink-0 rounded-lg flex items-center justify-center" style={{ background: C.card, color: C.t2 }}><ChevronRight size={16} /></button>
-      <button onClick={() => setCal({ y: +selDate.slice(0, 4), m: +selDate.slice(5, 7) - 1 })} aria-label="Open calendar" className="w-9 h-12 shrink-0 rounded-xl flex items-center justify-center" style={{ background: C.card, color: C.blue }}><CalendarDays size={18} /></button>
-    </div>
-  );
-  const agendaChips = (
-    <div className="flex items-center gap-2 pb-2">
-      <div className="flex-1 min-w-0 flex gap-2 overflow-x-auto">
-        {agendaCats.length > 0 && <Chip on={!selCat} onClick={() => setACat(null)}>All {todayTasks.filter((t) => !done[t.id]).length || "✓"}</Chip>}
-        {agendaCats.map(([c, n]) => <Chip key={c} on={selCat === c} onClick={() => setACat(selCat === c ? null : c)}>{c} {n || "✓"}</Chip>)}
-      </div>
-      <button onClick={() => setSecs(true)} className="rounded-xl px-3 py-1.5 shrink-0" style={{ background: C.card, color: C.blue }} aria-label="Show or hide sections"><Eye size={16} /></button>
-    </div>
-  );
-  const Agenda = (
-    <div className="space-y-4">
-      {shown.length > 0 ? agendaDates.map((d) => (
-        <div key={d}>
-          <h3 className="text-sm font-semibold mb-2">{d === TODAY_STR ? "Today" : d === addDays(TODAY_STR, 1) ? "Tomorrow" : new Date(d + "T00:00:00").toLocaleDateString("en-GB", { weekday: "long" })} <span className="font-normal text-xs" style={{ color: C.t2 }}>· {d}</span></h3>
-          <div className="space-y-2">{shown.filter((t) => t.date === d).map((t) => <TaskRow key={t.id} t={t} />)}</div>
-        </div>
-      )) : <Empty>Nothing scheduled for {selDate === TODAY_STR ? "today" : selDate}.</Empty>}
-      {vBacklog.length > 0 && (
-        <Card className="border" style={{ background: C.card, borderColor: C.line }}>
-          <button onClick={() => setDrawer(!drawer)} className="w-full flex justify-between items-center text-sm font-semibold">Unassigned backlog ({vBacklog.length}){drawer ? <ChevronDown size={16} /> : <ChevronUp size={16} />}</button>
-          {drawer && vBacklog.map((b) => (
-            <div key={b.id} className="flex items-center gap-2 pt-3">
-              {b.img && <img src={b.img} alt="" className="w-10 h-10 rounded-lg object-cover shrink-0" />}<div className="flex-1 min-w-0" onClick={() => b.text && setOpenB(openB === b.id ? null : b.id)}><span className="text-[10px] font-semibold" style={{ color: C.am }}>{b.id}</span><p className="text-sm truncate">{b.title}</p>{b.notes && <p className="text-xs" style={{ color: C.t2, display: "-webkit-box", WebkitLineClamp: openB === b.id ? 99 : 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{b.notes}</p>}{openB === b.id && b.text && <pre className="text-[11px] whitespace-pre-wrap mt-1 p-2 rounded-lg" style={{ background: C.bg, color: C.t2 }}>{b.text}</pre>}{b.text && openB !== b.id && <span className="text-[10px]" style={{ color: C.blue }}>Tap to view full text</span>}</div>
-              <button onClick={() => schedule(b)} className="text-xs font-semibold rounded-lg px-2.5 py-1.5" style={{ background: "#0084FF22", color: C.blue }}>+ Schedule</button>
-            </div>
-          ))}
-        </Card>
-      )}
-    </div>
-  );
-
-  const Cli = (
-    <div className="space-y-4">
-      <textarea value={cli} onChange={(e) => setCli(e.target.value)} rows={4} placeholder="=PT Buy Groceries, 2026-09-24 10:00, High Priority" className="w-full rounded-xl p-3 text-sm font-mono outline-none border" style={{ background: "#050608", borderColor: C.line, color: C.em }} />
-      <div className="grid grid-cols-3 gap-2">
-        {Object.keys(CODES).map((k) => <button key={k} onClick={() => setCli(`=${k} `)} className="rounded-xl py-2 text-left px-3" style={{ background: C.card }}><span className="text-sm font-mono font-semibold" style={{ color: C.blue }}>={k}</span><span className="block text-[10px]" style={{ color: C.t2 }}>{CODE_NAMES[k]}</span></button>)}
-      </div>
-      {preview ? (
-        <Card className="space-y-2">
-          <div className="flex justify-between text-xs"><span style={{ color: C.t2 }}>Auto ID</span><span className="font-mono font-semibold" style={{ color: C.blue }}>{preview.id}</span></div>
-          <div className="flex justify-between text-xs"><span style={{ color: C.t2 }}>Category</span><span>{preview.cat} · {CODE_NAMES[preview.code]}</span></div>
-          <div className="flex justify-between text-xs gap-4"><span style={{ color: C.t2 }}>Title</span><span className="text-right">{preview.title || "—"}</span></div>
-          <div className="flex gap-2 flex-wrap">
-            {(preview.date || preview.time) && <span className="text-[11px] px-2 py-1 rounded-full" style={{ background: "#0084FF22", color: C.blue }}>{[preview.date, preview.time].filter(Boolean).join(" ")}</span>}
-            {preview.pr && <span className="text-[11px] px-2 py-1 rounded-full" style={{ background: preview.pr.toLowerCase() === "high" ? "#EF444422" : "#F59E0B22", color: preview.pr.toLowerCase() === "high" ? C.red : C.am }}>{preview.pr} priority</span>}
-          </div>
-          <button onClick={runCli} disabled={!preview.title} className="w-full rounded-xl py-2.5 text-sm font-semibold disabled:opacity-40" style={{ background: C.blue }}>Add to backlog</button>
-        </Card>
-      ) : <Empty>Start with a shortcode like =PT to see the parsed result.</Empty>}
-    </div>
-  );
-
-  const Health = (
-    <div className="space-y-4">
-      {todayDoses.length > 0 && !off.Health && (
-      <Card>
-        <div className="flex justify-between items-center">
-          <div><p className="text-sm font-semibold">Breakfast anchor</p><p className="text-xs" style={{ color: C.t2 }}>Every dose time follows this</p></div>
-          <div className="flex items-center gap-3">
-            <button onClick={() => setShift((s) => s - 15)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.line }}><Minus size={16} /></button>
-            <span className="text-xl font-semibold tabular-nums w-16 text-center">{fmt(anchors.Breakfast)}</span>
-            <button onClick={() => setShift((s) => s + 15)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.line }}><Plus size={16} /></button>
-          </div>
-        </div>
-        <div className="grid gap-2 mt-3 text-center" style={{ gridTemplateColumns: "repeat(" + mealCards.length + ", 1fr)" }}>{mealCards.map(({ n }) => <div key={n}><p className="text-[10px]" style={{ color: C.t3 }}>{n}</p><p className="text-xs tabular-nums">{fmt(anchors[n])}</p></div>)}</div>
-      </Card>
-      )}
-      {off.Health && <Card className="text-center space-y-2"><p className="text-sm" style={{ color: C.t2 }}>Health is hidden.</p><button onClick={() => setOff({ ...off, Health: false })} className="rounded-xl px-4 py-2 text-sm font-semibold" style={{ background: C.blue }}>Show Health</button></Card>}
-      {!off.Health && doses.map((m) => (
-        <Card key={m.id} className="space-y-3">
-          <div className="flex justify-between items-start">
-            <div><p className="text-sm font-semibold">{m.name} <span style={{ color: C.t2 }}>{m.dose}</span></p><p className="text-xs" style={{ color: C.t2 }}>{m.meal} · alert {fmt(m.at - 30)}</p></div>
-            <span className="text-lg font-semibold tabular-nums" style={{ color: C.blue }}>{fmt(m.at)}</span>
-          </div>
-          <div className="flex gap-1">
-            {DAYS.map((d, i) => <button key={d} onClick={() => setFreq((f) => ({ ...f, [m.id]: f[m.id].map((v, j) => (j === i ? (v ? 0 : 1) : v)) }))} className="flex-1 rounded-lg py-1.5 text-[11px] font-medium" style={{ background: freq[m.id][i] ? C.blue : C.line, color: freq[m.id][i] ? "#fff" : C.t2 }}>{d}</button>)}
-          </div>
-          <div><div className="flex justify-between text-[11px] mb-1" style={{ color: C.t2 }}><span>Day {m.day}/{m.total}</span><span>{m.total - m.day} left</span></div><Bar pct={(m.day / m.total) * 100} color={m.total - m.day <= 3 ? C.am : C.em} /></div>
-          <div className="flex flex-wrap gap-2 items-center">
-            {m.fasting && <span className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full" style={{ background: "#F59E0B22", color: C.am }}><Droplet size={11} />Fasting lab required</span>}
-            {m.refill && <span className="text-[11px] px-2 py-1 rounded-full" style={{ background: "#EF444422", color: C.red }}>Low stock</span>}
-            {consultState[m.id] && <span className="text-[11px] px-2 py-1 rounded-full" style={{ background: "#10B98122", color: C.em }}>Consult saved{consultState[m.id].follow ? " · follow-up" : ""}</span>}
-          </div>
-          {m.total - m.day <= 3 && <button onClick={() => { setConsult(m); setCForm({ follow: null, note: "" }); }} className="w-full rounded-xl py-2.5 text-sm font-semibold border" style={{ borderColor: C.am, color: C.am }}>Simulate 30-day prescription end</button>}
-        </Card>
-      ))}
-    </div>
-  );
-
-  const areaRow = (t) => {
-    const isD = !!done[t.id];
-    const when = t.t != null ? (t.date !== TODAY_STR ? t.date + " " : "") + fmt(t.t) : "Unscheduled";
-    const tick = <button onClick={() => setDone((d) => ({ ...d, [t.id]: !d[t.id] }))} aria-label="Toggle complete" className="w-6 h-6 shrink-0 rounded-full border flex items-center justify-center" style={{ borderColor: isD ? C.em : C.line, background: isD ? C.em : "transparent" }}>{isD && <Check size={14} color="#fff" />}</button>;
-    const acts = <div className="flex gap-1 shrink-0"><button onClick={() => openEd(t, "edit")} aria-label="Edit" className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: C.line, color: C.t2 }}><Pencil size={13} /></button><button onClick={() => openEd(t, "resched")} aria-label="Reschedule" className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: C.line, color: C.blue }}><CalendarClock size={13} /></button></div>;
-    const tag = <span className="text-[10px] font-semibold" style={{ color: t.id.startsWith("BK") ? C.am : C.blue }}>{t.id}</span>;
-    const pr = t.pri === "High" ? <span className="text-[10px] font-semibold ml-1.5" style={{ color: C.red }}>High</span> : t.pri === "Low" ? <span className="text-[10px] ml-1.5" style={{ color: C.t3 }}>Low</span> : null;
-    const tx = { color: isD ? C.t3 : C.t1, textDecoration: isD ? "line-through" : "none" };
-    return compact ? (
-      <div key={t.id} className="flex items-center gap-2 rounded-xl px-2.5 py-2" style={{ background: C.card }}>{tick}<div className="flex-1 min-w-0 flex items-center gap-1.5">{tag}<span className="text-sm truncate" style={tx}>{t.title}</span></div><span className="text-[11px] tabular-nums shrink-0" style={{ color: C.t2 }}>{t.t != null ? fmt(t.t) : "—"}</span>{acts}</div>
-    ) : (
-      <Card key={t.id} className="flex gap-3 items-start"><span className="mt-0.5">{tick}</span><div className="flex-1 min-w-0">{tag}{pr}<p className="text-sm" style={tx}>{t.title}</p>{t.notes && <p className="text-xs" style={{ color: C.t3 }}>{t.notes}</p>}<p className="text-[11px] mt-0.5" style={{ color: C.t2 }}>{t.cat} · {when}</p></div>{acts}</Card>
-    );
-  };
-  const areaControls = (
-    <div className="space-y-2 pb-2">
-      <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: C.t3 }}><Search size={16} /></span>
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search title or ID (e.g. PT001)" className="w-full rounded-xl pl-9 pr-3 py-2.5 text-sm outline-none border" style={{ background: C.card, borderColor: C.line, color: C.t1 }} />
-      </div>
-      {areaTiles.length > 0 && (
-        <div className="flex gap-2 overflow-x-auto">
-          <Chip on={!selArea} onClick={() => setArea(null)}>All {areaTiles.reduce((a, x) => a + x[1], 0)}</Chip>
-          {areaTiles.map(([c, n]) => <Chip key={c} on={selArea === c} onClick={() => setArea(selArea === c ? null : c)}>{c} {n}</Chip>)}
-        </div>
-      )}
-      <div className="flex gap-2 items-center">
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="flex-1 min-w-0 rounded-xl px-3 py-2 text-xs outline-none" style={{ background: C.card, color: C.t1 }}>
-          <option value="time">Sort: Time / schedule</option>
-          <option value="priority">Sort: Priority (high to low)</option>
-          <option value="category">Sort: Category</option>
-        </select>
-        <div className="flex rounded-xl overflow-hidden" style={{ background: C.card }}>
-          {[[false, LayoutGrid], [true, List]].map(([v, I]) => <button key={String(v)} onClick={() => setCompact(v)} className="px-3 py-2" style={{ background: compact === v ? C.blue : "transparent", color: compact === v ? "#fff" : C.t2 }} aria-label={v ? "Compact view" : "Card view"}><I size={16} /></button>)}
-        </div>
-        <button onClick={() => setSecs(true)} className="rounded-xl px-3 py-2" style={{ background: C.card, color: C.blue }} aria-label="Show or hide sections"><Eye size={16} /></button>
-      </div>
-    </div>
-  );
-  const Areas = (
-    <div className="space-y-3">
-      <div className={compact ? "space-y-1" : "space-y-2"}>
-        <p className="text-xs" style={{ color: C.t2 }}>{selArea || "All areas"} · {areaList.length} item{areaList.length === 1 ? "" : "s"}</p>
-        {areaList.length ? areaList.map(areaRow) : <Empty>{q ? "No tasks match your search." : "Nothing here yet."}</Empty>}
-      </div>
-      {!off.Finance && (
-      <Card className="space-y-3">
-        <p className="text-sm font-semibold">Finance overview</p>
-        <div><div className="flex justify-between text-xs mb-1"><span style={{ color: C.t2 }}>Monthly budget</span><span>62,400 / 80,000</span></div><Bar pct={78} color={C.blue} /></div>
-        <div><div className="flex justify-between text-xs mb-1"><span style={{ color: C.t2 }}>Credit balance</span><span>48,000 / 150,000</span></div><Bar pct={32} color={C.am} /></div>
-        {TX.map(([n, a, inc]) => <div key={n} className="flex justify-between text-sm border-t pt-2" style={{ borderColor: C.line }}><span>{n}</span><span className="tabular-nums" style={{ color: inc ? C.em : C.red }}>{inc ? "+" : "−"}{a.toLocaleString()}</span></div>)}
-      </Card>
-      )}
-    </div>
-  );
-
-  return (
-    <div className={plat + (REAL ? "" : " min-h-screen flex flex-col items-center justify-center gap-3 p-4")} style={{ background: "#050608", color: C.t1, fontFamily: FONTS[plat] }}>
-      <style>{PCSS}</style>
-      {!REAL && <div className="flex rounded-full p-1 text-xs font-semibold" style={{ background: C.card }}>{[["ios", "iOS"], ["android", "Android"]].map(([p, l]) => <button key={p} onClick={() => setPlat(p)} className="rounded-full px-4 py-1.5" style={{ background: plat === p ? C.blue : "transparent", color: plat === p ? "#fff" : C.t2 }}>{l}</button>)}</div>}
-      <div className="zs relative overflow-hidden flex flex-col" style={rootStyle}>
-        <div className="shrink-0" style={topBar}>
-          {frame ? <StatusBar plat={plat} time={hh} /> : <div style={{ height: "var(--sb)" }} />}
-          <header className="flex items-center gap-2 px-4" style={{ height: "var(--hh)" }}>
-          <h1 style={{ fontSize: ios ? 22 : 20, fontWeight: ios ? 700 : 500, letterSpacing: ios ? "-0.02em" : 0 }}>ZenSchedule</h1>
-          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "#0084FF22", color: C.blue }}>ZenOx</span>
-          <span className="ml-auto flex items-center gap-1 text-[10px] font-semibold" style={{ color: C.am }}><WifiOff size={12} />OFFLINE</span>
-          <button onClick={() => setScan({ stage: "pick", mode: "auto" })} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.card, color: C.blue }} aria-label="Scan document"><Camera size={18} /></button>
-          <button onClick={() => { setMDate(selDate); setMMode("form"); setManual(true); }} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.blue }} aria-label="Quick add"><Plus size={18} color="#fff" /></button>
-        </header>
-          {(tab === "agenda" || tab === "health") && <div className="px-4">{dateBar}</div>}
-          {tab === "agenda" && <div className="px-4">{agendaChips}</div>}
-          {tab === "areas" && <div className="px-4 pt-1">{areaControls}</div>}
-        </div>
-        <main className="flex-1 min-h-0 overflow-y-auto px-4 pt-3" style={{ paddingBottom: "calc(var(--nh) + var(--sab) + 16px)" }}>{tab === "agenda" ? Agenda : tab === "cli" ? Cli : tab === "health" ? Health : Areas}</main>
-        <nav className="absolute bottom-0 left-0 right-0 flex items-start px-2" style={navBar}>
-          {navs.map(([k, l, I]) => { const on = tab === k; return (
-            <button key={k} onClick={() => setTab(k)} className="flex-1 flex flex-col items-center gap-0.5 pt-2 font-medium" style={{ color: on ? C.blue : C.t3, fontSize: ios ? 10 : 12 }}>
-              <span className="flex items-center justify-center" style={ios ? {} : { width: 56, height: 28, borderRadius: 14, background: on ? "#0084FF33" : "transparent", color: on ? C.t1 : C.t3 }}><I size={ios ? 24 : 22} /></span>{l}
-            </button>
-          ); })}
-        </nav>
-        {frame && <span className="absolute left-1/2 -translate-x-1/2 rounded-full" style={{ zIndex: 26, bottom: ios ? 8 : 6, width: ios ? 134 : 108, height: ios ? 5 : 4, background: "#F3F5F7aa" }} />}
-
-        {cal && (() => {
-          const lead = (new Date(cal.y, cal.m, 1).getDay() + 6) % 7;
-          const n = new Date(cal.y, cal.m + 1, 0).getDate();
-          const iso = (d) => cal.y + "-" + String(cal.m + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
-          const go = (k) => { const d = new Date(cal.y, cal.m + k, 1); setCal({ y: d.getFullYear(), m: d.getMonth() }); };
-          const sel = { background: C.card, color: C.t1 };
-          return (
-            <Sheet title="Select date" onClose={() => setCal(null)}>
-              <div className="flex items-center gap-2">
-                <button onClick={() => go(-1)} aria-label="Previous month" className="w-9 h-9 rounded-xl flex items-center justify-center" style={sel}><ChevronLeft size={16} /></button>
-                <select value={cal.m} onChange={(e) => setCal({ ...cal, m: +e.target.value })} className="flex-1 min-w-0 rounded-xl px-2 py-2 text-sm outline-none" style={sel}>{Array.from({ length: 12 }, (_, i) => <option key={i} value={i}>{new Date(2000, i, 1).toLocaleString("en-GB", { month: "long" })}</option>)}</select>
-                <select value={cal.y} onChange={(e) => setCal({ ...cal, y: +e.target.value })} className="rounded-xl px-2 py-2 text-sm outline-none" style={sel}>{Array.from({ length: 31 }, (_, i) => 2015 + i).map((y) => <option key={y}>{y}</option>)}</select>
-                <button onClick={() => go(1)} aria-label="Next month" className="w-9 h-9 rounded-xl flex items-center justify-center" style={sel}><ChevronRight size={16} /></button>
-              </div>
-              <div className="grid grid-cols-7 gap-1 text-center">
-                {DAYS.map((d) => <span key={d} className="text-[10px] uppercase" style={{ color: C.t3 }}>{d}</span>)}
-                {Array.from({ length: lead }, (_, i) => <span key={"b" + i} />)}
-                {Array.from({ length: n }, (_, i) => i + 1).map((d) => {
-                  const k = iso(d), on = k === selDate, has = tasks.some((t) => t.date === k && !off[t.cat]);
-                  return (
-                    <button key={d} onClick={() => { setSelDate(k); setCal(null); }} className="h-10 rounded-xl flex flex-col items-center justify-center text-sm tabular-nums" style={{ background: on ? C.blue : "transparent", color: on ? "#fff" : k === TODAY_STR ? C.blue : C.t1, border: k === TODAY_STR && !on ? "1px solid " + C.blue : "1px solid transparent" }}>
-                      {d}<span className="w-1 h-1 rounded-full" style={{ background: has ? (on ? "#fff" : C.em) : "transparent" }} />
-                    </button>
-                  );
-                })}
-              </div>
-              <button onClick={() => { setSelDate(TODAY_STR); setCal(null); }} className="w-full rounded-xl py-3 text-sm font-semibold" style={{ background: C.card, color: C.blue }}>Go to today</button>
-            </Sheet>
-          );
-        })()}
-        {secs && (
-          <Sheet title="Show / hide sections" onClose={() => setSecs(false)}>
-            <p className="text-xs" style={{ color: C.t2 }}>Untick a section to hide its tasks, cards and medication schedule everywhere. Tick it again to bring them back.</p>
-            {secCats.map(([c, n]) => (
-              <button key={c} onClick={() => setOff({ ...off, [c]: !off[c] })} className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5" style={{ background: C.card }}>
-                <span className="w-5 h-5 rounded-md border flex items-center justify-center" style={{ borderColor: off[c] ? C.t3 : C.blue, background: off[c] ? "transparent" : C.blue }}>{!off[c] && <Check size={14} color="#fff" />}</span>
-                <span className="flex-1 text-left text-sm" style={{ color: off[c] ? C.t3 : C.t1 }}>{c}</span>
-                <span className="text-xs" style={{ color: C.t2 }}>{n}</span>
-              </button>
-            ))}
-          </Sheet>
-        )}
-        {ed && (
-          <Sheet title={(ed.mode === "edit" ? "Edit " : "Reschedule ") + ed.item.id} onClose={() => setEd(null)}>
-            {ed.mode === "edit" && <>
-              <input value={ed.title} onChange={(e) => setEd({ ...ed, title: e.target.value })} placeholder="Title" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
-              <input value={ed.notes} onChange={(e) => setEd({ ...ed, notes: e.target.value })} placeholder="Notes" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
-              <div className="flex flex-wrap gap-1.5">{CATS.map((c) => <Chip key={c} on={ed.cat === c} onClick={() => setEd({ ...ed, cat: c })}>{c}</Chip>)}</div>
-              <div className="flex gap-2">{["Low", "Medium", "High"].map((p) => <button key={p} onClick={() => setEd({ ...ed, pri: p })} className="flex-1 rounded-xl py-2 text-xs font-semibold" style={{ background: ed.pri === p ? (p === "High" ? C.red : p === "Medium" ? C.am : C.em) : C.card, color: ed.pri === p ? "#fff" : C.t2 }}>{p}</button>)}</div>
-            </>}
-            {ed.mode === "resched" && <p className="text-sm">{ed.title}</p>}
-            <div className="flex gap-2"><Chip on={ed.sched} onClick={() => setEd({ ...ed, sched: true })}>Scheduled</Chip><Chip on={!ed.sched} onClick={() => setEd({ ...ed, sched: false })}>Backlog</Chip></div>
-            {ed.sched && <div className="flex gap-2 items-center">
-              <input type="date" value={ed.date} onChange={(e) => setEd({ ...ed, date: e.target.value || TODAY_STR })} className="flex-1 min-w-0 rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1, colorScheme: "dark" }} />
-              <select value={ed.hh} onChange={(e) => setEd({ ...ed, hh: e.target.value })} className="rounded-xl px-2 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }}>{Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0")).map((v) => <option key={v}>{v}</option>)}</select>
-              <span style={{ color: C.t2 }}>:</span>
-              <select value={ed.mm} onChange={(e) => setEd({ ...ed, mm: e.target.value })} className="rounded-xl px-2 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }}>{Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, "0")).map((v) => <option key={v}>{v}</option>)}</select>
-            </div>}
-            <button disabled={!ed.title.trim()} onClick={saveEdit} className="w-full rounded-xl py-3 text-sm font-semibold disabled:opacity-40" style={{ background: C.blue }}>Save changes</button>
-          </Sheet>
-        )}
-        {scan && (
-          <Sheet title="Scan document" onClose={() => setScan(null)}>
-            {scan.stage === "pick" && <>
-              <p className="text-xs" style={{ color: C.t2 }}>Take a photo or upload a receipt, bill, prescription or doctor's note.</p>
-              <div className="flex gap-2">{[["auto", "Auto-detect"], ["receipt", "Receipt"], ["rx", "Prescription"]].map(([k, l]) => <Chip key={k} on={scan.mode === k} onClick={() => setScan({ ...scan, mode: k })}>{l}</Chip>)}</div>
-              <div className="grid grid-cols-2 gap-2">
-                <label className="rounded-xl py-3 text-sm font-semibold text-center cursor-pointer" style={{ background: C.blue }}><input type="file" accept="image/*" capture="environment" hidden onChange={onFile} />Take photo</label>
-                <label className="rounded-xl py-3 text-sm font-semibold text-center cursor-pointer" style={{ background: C.card }}><input type="file" accept="image/*" hidden onChange={onFile} />Upload image</label>
-              </div>
-            </>}
-            {scan.stage === "busy" && <div className="space-y-2 py-4"><p className="text-sm text-center" style={{ color: C.t2 }}>Reading text… {scan.progress}%</p><Bar pct={scan.progress} color={C.blue} /></div>}
-            {scan.stage === "error" && <>
-              <p className="text-sm" style={{ color: C.red }}>{scan.err}</p>
-              <button onClick={() => setScan({ stage: "pick", mode: scan.mode })} className="w-full rounded-xl py-3 text-sm font-semibold" style={{ background: C.card }}>Try again</button>
-            </>}
-            {scan.stage === "done" && <>
-              <div className="flex gap-3"><img src={scan.img} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" /><div className="min-w-0"><span className="text-[10px] font-semibold" style={{ color: C.am }}>{CODES[scan.res.code]} · {CODE_NAMES[scan.res.code]}</span><p className="text-sm font-semibold">{scan.res.title}</p><p className="text-xs" style={{ color: C.t2 }}>{scan.res.summary}</p></div></div>
-              {scan.text && <pre className="text-[11px] whitespace-pre-wrap max-h-32 overflow-y-auto p-2 rounded-lg" style={{ background: C.card, color: C.t2 }}>{scan.text}</pre>}
-              <div className="flex gap-2">
-                <button onClick={() => setScan({ stage: "pick", mode: scan.mode })} className="flex-1 rounded-xl py-3 text-sm font-semibold" style={{ background: C.card }}>Rescan</button>
-                <button onClick={saveScan} className="flex-1 rounded-xl py-3 text-sm font-semibold" style={{ background: C.blue }}>Save to backlog</button>
-              </div>
-            </>}
-          </Sheet>
-        )}
-        {consult && (
-          <Sheet title={`${consult.name}: doctor consultation`} onClose={() => setConsult(null)}>
-            <p className="text-sm" style={{ color: C.t2 }}>Is a follow-up appointment needed?</p>
-            <div className="flex gap-2">{[["Yes", true], ["No", false]].map(([l, v]) => <button key={l} onClick={() => setCForm({ ...cForm, follow: v })} className="flex-1 rounded-xl py-2.5 text-sm font-semibold" style={{ background: cForm.follow === v ? C.blue : C.card }}>{l}</button>)}</div>
-            {consult.fasting && <textarea value={cForm.note} onChange={(e) => setCForm({ ...cForm, note: e.target.value })} rows={3} placeholder="Fasting lab note (optional)" className="w-full rounded-xl p-3 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />}
-            <button disabled={cForm.follow === null} onClick={() => { setConsultState((s) => ({ ...s, [consult.id]: cForm })); setConsult(null); }} className="w-full rounded-xl py-3 text-sm font-semibold disabled:opacity-40" style={{ background: C.blue }}>Save consultation</button>
-          </Sheet>
-        )}
-        {manual && (
-          <Sheet title="New task" onClose={() => setManual(false)}>
-            <div className="flex gap-2"><Chip on={mMode === "form"} onClick={() => setMMode("form")}>Form</Chip><Chip on={mMode === "cmd"} onClick={() => setMMode("cmd")}>Quick command</Chip></div>
-            {mMode === "cmd" && <>
-              <input autoFocus value={cli} onChange={(e) => setCli(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { runCli(); setManual(false); } }} placeholder="=PT Call bank, 2026-10-01 10:00, High Priority" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none font-mono" style={{ background: "#050608", color: C.em }} />
-              <div className="flex flex-wrap gap-1.5">{Object.keys(CODES).map((k) => <button key={k} onClick={() => setCli("=" + k + " ")} className="rounded-lg px-2.5 py-1.5 text-xs font-mono font-semibold" style={{ background: C.card, color: C.blue }}>={k}</button>)}</div>
-              {preview ? (
-                <Card className="space-y-1 text-xs">
-                  <div className="flex justify-between"><span style={{ color: C.t2 }}>ID</span><span className="font-mono font-semibold" style={{ color: C.blue }}>{preview.id}</span></div>
-                  <div className="flex justify-between"><span style={{ color: C.t2 }}>Category</span><span>{preview.cat}</span></div>
-                  <div className="flex justify-between gap-4"><span style={{ color: C.t2 }}>Title</span><span className="text-right">{preview.title || "—"}</span></div>
-                  {(preview.date || preview.time || preview.pr) && <div className="flex gap-2 flex-wrap pt-1">{(preview.date || preview.time) && <span className="px-2 py-0.5 rounded-full" style={{ background: "#0084FF22", color: C.blue }}>{[preview.date, preview.time].filter(Boolean).join(" ")}</span>}{preview.pr && <span className="px-2 py-0.5 rounded-full" style={{ background: "#F59E0B22", color: C.am }}>{preview.pr} priority</span>}</div>}
-                </Card>
-              ) : <p className="text-xs" style={{ color: C.t3 }}>Start with a shortcode like =PT, or type plain text to save it to the backlog.</p>}
-              <button disabled={!cli.trim() || (preview && !preview.title)} onClick={() => { runCli(); setManual(false); }} className="w-full rounded-xl py-3 text-sm font-semibold disabled:opacity-40" style={{ background: C.blue }}>Add</button>
-            </>}
-            {mMode === "form" && <>
-            <div className="grid grid-cols-5 gap-1.5">{Object.keys(CODES).map((k) => <button key={k} onClick={() => setMCode(k)} className="rounded-lg py-2 text-xs font-mono font-semibold" style={{ background: mCode === k ? C.blue : C.card }}>{k}</button>)}</div>
-            <p className="text-xs" style={{ color: C.t2 }}>{CODE_NAMES[mCode]} · {CODES[mCode]}</p>
-            <input value={mTitle} onChange={(e) => setMTitle(e.target.value)} placeholder="Task title" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
-            <input value={mNotes} onChange={(e) => setMNotes(e.target.value)} placeholder="Notes (optional)" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
-            <div className="flex gap-2">
-              <Chip on={mSched} onClick={() => setMSched(true)}>Schedule</Chip>
-              <Chip on={!mSched} onClick={() => setMSched(false)}>Backlog</Chip>
-              <Chip on={mKeys} onClick={() => setMKeys(!mKeys)}>Quantity</Chip>
-            </div>
-            <div className="flex gap-2 items-center">
-              <input type="date" value={mDate} onChange={(e) => setMDate(e.target.value || TODAY_STR)} className="flex-1 min-w-0 rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1, colorScheme: "dark" }} />
-              {mSched && <>
-                <select value={mHH} onChange={(e) => setMHH(e.target.value)} className="rounded-xl px-2 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }}>{Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0")).map((v) => <option key={v}>{v}</option>)}</select>
-                <span style={{ color: C.t2 }}>:</span>
-                <select value={mMM} onChange={(e) => setMMM(e.target.value)} className="rounded-xl px-2 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }}>{Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, "0")).map((v) => <option key={v}>{v}</option>)}</select>
-              </>}
-            </div>
-            <div className="flex gap-2">{["Low", "Medium", "High"].map((p) => <button key={p} onClick={() => setMPri(p)} className="flex-1 rounded-xl py-2 text-xs font-semibold" style={{ background: mPri === p ? (p === "High" ? C.red : p === "Medium" ? C.am : C.em) : C.card, color: mPri === p ? "#fff" : C.t2 }}>{p}</button>)}</div>
-            {mKeys && <>
-              <div className="rounded-xl px-3 py-2 text-right text-xl font-semibold tabular-nums" style={{ background: C.card, color: mNum ? C.t1 : C.t3 }}>{mNum || "0"}</div>
-              <div className="grid grid-cols-3 gap-2">{["1", "2", "3", "4", "5", "6", "7", "8", "9", "C", "0", "⌫"].map((k) => <button key={k} onClick={() => press(k)} className="rounded-xl py-3 text-base font-semibold flex items-center justify-center" style={{ background: C.card, color: k === "C" ? C.red : C.t1 }}>{k === "⌫" ? <Delete size={18} /> : k}</button>)}</div>
-            </>}
-            <button disabled={!mTitle.trim()} onClick={confirmManual} className="w-full rounded-xl py-3 text-sm font-semibold disabled:opacity-40" style={{ background: C.blue }}>{mSched ? "Schedule at " + mHH + ":" + mMM : "Save to backlog"}</button>
-            </>}
-          </Sheet>
-        )}
-        {toast && <div className="absolute left-4 right-4 z-40 rounded-xl px-3 py-2 text-sm text-center" style={{ background: C.em, color: "#fff", bottom: "calc(var(--nh) + var(--sab) + 12px)" }}>{toast}</div>}
-      </div>
-    </div>
-  );
+const [tab, setTab] = useState("agenda");
+const [plat, setPlat] = useState(REAL || "ios");
+const [shift, setShift] = useState(0);
+const [done, setDone] = useState({});
+const [freq, setFreq] = useState(() => Object.fromEntries(MEDS.map((m) => [m.id, m.id === "m4" ? [1, 1, 1, 1, 1, 0, 0] : all7])));
+const [backlog, setBacklog] = useState(BACKLOG0);
+const [extras, setExtras] = useState(TASKS0);
+const [cli, setCli] = useState("");
+const [aCat, setACat] = useState(null);
+const [area, setArea] = useState(null);
+const [drawer, setDrawer] = useState(true);
+const [consult, setConsult] = useState(null);
+const [consultState, setConsultState] = useState({});
+const [cForm, setCForm] = useState({ follow: null, note: "" });
+const [manual, setManual] = useState(false);
+const [mCode, setMCode] = useState("PT");
+const [mTitle, setMTitle] = useState("");
+const [mNum, setMNum] = useState("");
+const [mNotes, setMNotes] = useState("");
+const [mDate, setMDate] = useState(TODAY_STR);
+const [mHH, setMHH] = useState("09");
+const [mMM, setMMM] = useState("00");
+const [mPri, setMPri] = useState("Medium");
+const [mSched, setMSched] = useState(true);
+const [mKeys, setMKeys] = useState(false);
+const [toast, setToast] = useState("");
+const [scan, setScan] = useState(null);
+const [openB, setOpenB] = useState(null);
+const [q, setQ] = useState("");
+const [sortBy, setSortBy] = useState("time");
+const [compact, setCompact] = useState(false);
+const [ed, setEd] = useState(null);
+const [off, setOff] = useState({});
+const [secs, setSecs] = useState(false);
+const [selDate, setSelDate] = useState(TODAY_STR);
+const [cal, setCal] = useState(null);
+const [mMode, setMMode] = useState("form");
+const [mTried, setMTried] = useState(false);
+const [clock, setClock] = useState(new Date());
+useEffect(() => { const i = setInterval(() => setClock(new Date()), 15000); return () => clearInterval(i); }, []);
+ 
+const tasks = useMemo(() => [...extras].sort((a, b) => a.t - b.t), [extras]);
+const allItems = [...tasks, ...backlog];
+const anchors = useMemo(() => Object.fromEntries(MEALS.map(([n, o]) => [n, 480 + shift + o])), [shift]);
+const doses = useMemo(() => MEDS.map((m) => ({ ...m, at: anchors[m.meal] + m.off })), [anchors]);
+const todayDoses = useMemo(() => doses.filter((m) => freq[m.id][(new Date(selDate + "T00:00:00").getDay() + 6) % 7]), [doses, freq, selDate]);
+const mealCards = useMemo(() => MEALS.map(([n]) => ({ n, items: todayDoses.filter((d) => d.meal === n) })).filter((x) => x.items.length), [todayDoses]);
+const todayTasks = useMemo(() => tasks.filter((t) => t.date === selDate && !off[t.cat]), [tasks, off, selDate]);
+const vBacklog = useMemo(() => backlog.filter((b) => !off[b.cat]), [backlog, off]);
+const secCats = CATS.map((c) => [c, allItems.filter((t) => t.cat === c).length + (c === "Health" ? MEDS.length : 0)]).filter((x) => x[1]);
+const agendaCats = useMemo(() => CATS.map((c) => [c, todayTasks.filter((t) => t.cat === c && !done[t.id]).length, todayTasks.filter((t) => t.cat === c).length]).filter((x) => x[2]), [todayTasks, done]);
+const selCat = agendaCats.some((x) => x[0] === aCat) ? aCat : null;
+const shown = todayTasks.filter((t) => !selCat || t.cat === selCat);
+const agendaDates = [...new Set(shown.map((t) => t.date))].sort();
+const areaTiles = useMemo(() => CATS.map((c) => [c, allItems.filter((t) => t.cat === c).length]).filter((x) => x[1] && !off[x[0]]), [tasks, backlog, off]);
+const selArea = areaTiles.some((x) => x[0] === area) ? area : null;
+const PRI = { High: 0, Medium: 1, Low: 2 };
+const areaList = useMemo(() => {
+const s = q.trim().toLowerCase();
+const tk = (t) => (t.t != null ? t.date + fmt(t.t) : "9999");
+const cmp = { time: (a, b) => tk(a).localeCompare(tk(b)), priority: (a, b) => PRI[a.pri || "Medium"] - PRI[b.pri || "Medium"] || tk(a).localeCompare(tk(b)), category: (a, b) => a.cat.localeCompare(b.cat) || tk(a).localeCompare(tk(b)) }[sortBy];
+return [...tasks, ...backlog].filter((t) => !off[t.cat] && (!selArea || t.cat === selArea) && (!s || t.title.toLowerCase().includes(s) || t.id.toLowerCase().includes(s))).sort(cmp);
+}, [tasks, backlog, selArea, q, sortBy, off]);
+const preview = parse(cli, allItems);
+ 
+const flash = (m) => { setToast(m); setTimeout(() => setToast(""), 2600); };
+const toMin = (s) => { const m = s && s.match(/^(\d{1,2}):(\d{2})$/); if (!m) return null; const h = +m[1], n = +m[2]; return h < 24 && n < 60 ? h * 60 + n : null; };
+const create = ({ code, title, notes = "", date, time, pri, extra = {} }) => {
+const cat = CODES[code];
+const p = pri ? pri[0].toUpperCase() + pri.slice(1).toLowerCase() : "Medium";
+if (time != null) {
+const id = code + String(allItems.filter((x) => x.id.startsWith(code)).length + 1).padStart(3, "0");
+setExtras((e) => [...e, { id, cat, title, notes, t: time, flex: false, date: date || selDate, pri: p }]);
+flash(id + " scheduled" + ((date || selDate) !== TODAY_STR ? " on " + (date || selDate) : " today") + " at " + fmt(time));
+} else {
+const id = "BK" + String(Math.max(0, ...allItems.filter((x) => x.id.startsWith("BK")).map((b) => +b.id.slice(2))) + 1).padStart(3, "0");
+setBacklog((b) => [...b, { id, cat, title, notes: notes || (date ? "Due " + date : ""), pri: p, ...extra }]);
+flash(id + " saved to backlog");
 }
-
+};
+const addBacklog = (cat, title, notes = "") => create({ code: "OT", title, notes });
+const schedule = (item) => {
+const used = new Set(tasks.filter((t) => t.date === selDate).map((t) => t.t));
+let t = 720;
+while (used.has(t)) t += 30;
+setExtras((e) => [...e, { ...item, t, flex: true, date: selDate, pri: item.pri || "Medium" }]);
+setBacklog((b) => b.filter((x) => x.id !== item.id));
+};
+const cliBase = () => preview ? validate(preview.cat, { title: preview.title, date: preview.date || selDate, time: toMin(preview.time) }, vctx(null)) : cli.trim() ? validate("Personal", { title: cli.trim(), date: selDate }, vctx(null)) : {};
+const cliCheck = () => { const e = cliBase(); if (preview && preview.time && toMin(preview.time) == null) e.time = "Time must be a valid HH:MM (00:00 to 23:59)"; return e; };
+const cliErrs = cliCheck();
+const runCli = () => {
+const first = Object.values(cliCheck())[0];
+if (first) { flash(first); return false; }
+if (preview) create({ code: preview.code, title: preview.title, date: preview.date, time: toMin(preview.time), pri: preview.pr });
+else if (cli.trim()) create({ code: "PT", title: cli.trim() });
+else return false;
+setCli(""); return true;
+};
+const vctx = (id, orig) => ({ today: TODAY_STR, nowMin: clock.getHours() * 60 + clock.getMinutes(), items: allItems, id, orig });
+const mData = { title: mTitle, notes: mNotes, date: mDate, time: mSched ? +mHH * 60 + +mMM : null, qty: mNum };
+const mErrs = mTried ? validate(CODES[mCode], mData, vctx(null)) : {};
+const edErrs = ed ? validate(ed.cat, { title: ed.title, notes: ed.notes, date: ed.date, time: ed.sched ? +ed.hh * 60 + +ed.mm : null }, vctx(ed.item.id, { date: ed.item.date, t: ed.item.t })) : {};
+const confirmManual = () => {
+setMTried(true);
+if (Object.keys(validate(CODES[mCode], mData, vctx(null))).length) return;
+create({ code: mCode, title: mTitle.trim(), notes: [mNotes.trim(), mNum && "Qty " + mNum].filter(Boolean).join(" · "), date: mDate, time: mSched ? +mHH * 60 + +mMM : null, pri: mPri });
+setManual(false); setMTitle(""); setMNotes(""); setMNum(""); setMCode("PT"); setMPri("Medium"); setMSched(true); setMKeys(false); setMDate(TODAY_STR); setMTried(false);
+};
+const openEd = (item, mode) => setEd({ item, mode, title: item.title, notes: item.notes || "", cat: item.cat, pri: item.pri || "Medium", date: item.date || TODAY_STR, hh: item.t != null ? fmt(item.t).slice(0, 2) : "09", mm: item.t != null ? String(Math.floor(+fmt(item.t).slice(3) / 5) * 5).padStart(2, "0") : "00", sched: item.t != null || mode === "resched" });
+const saveEdit = () => {
+const { item, title, notes, cat, pri, date, hh, mm, sched } = ed;
+const errs = Object.values(edErrs);
+if (errs.length) { flash(errs[0]); return; }
+const n = { ...item, title: title.trim(), notes, cat, pri, date };
+const isTask = item.t != null;
+if (sched) {
+n.t = +hh * 60 + +mm; n.flex = false; n.date = date || TODAY_STR;
+if (isTask) setExtras((e) => e.map((x) => (x.id === item.id ? n : x)));
+else { setBacklog((b) => b.filter((x) => x.id !== item.id)); setExtras((e) => [...e, n]); }
+} else {
+delete n.t; delete n.flex;
+if (isTask) { setExtras((e) => e.filter((x) => x.id !== item.id)); setBacklog((b) => [...b, n]); }
+else setBacklog((b) => b.map((x) => (x.id === item.id ? n : x)));
+}
+setEd(null); flash(item.id + (sched ? " scheduled for " + n.date + " " + fmt(n.t) : " moved to backlog"));
+};
+const onFile = async (e) => {
+const f = e.target.files[0]; e.target.value = "";
+if (!f) return;
+setScan({ stage: "busy", mode: scan.mode, progress: 0 });
+try {
+const big = await scale(f, 1600), small = await scale(f, 160);
+const T = await loadTess();
+const { data } = await T.recognize(big, "eng", { logger: (m) => { if (m.status === "recognizing text") setScan((s) => ({ ...s, progress: Math.round(m.progress * 100) })); } });
+const text = data.text.trim();
+setScan((s) => ({ ...s, stage: "done", img: small, text, res: analyze(text, s.mode) }));
+} catch (err) { setScan((s) => ({ ...s, stage: "error", err: err.message || "Could not read this image." })); }
+};
+const saveScan = () => {
+create({ code: scan.res.code, title: scan.res.title, notes: scan.res.summary, extra: { text: scan.text, img: scan.img } });
+setScan(null); setTab("agenda"); setDrawer(true);
+};
+const press = (k) => setMNum((v) => (k === "C" ? "" : k === "⌫" ? v.slice(0, -1) : (v + k).slice(0, 8)));
+ 
+const ios = plat === "ios";
+const frame = !REAL;
+const glass = ios ? { background: "rgba(13,15,18,.72)", backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)" } : { background: "#181D24" };
+const topBar = { background: C.bg, zIndex: 25, borderBottom: ios ? "0.5px solid rgba(255,255,255,.1)" : "none", boxShadow: ios ? "none" : "0 2px 6px rgba(0,0,0,.55)" };
+const navBar = { ...glass, zIndex: 25, height: "calc(var(--nh) + var(--sab))", borderTop: ios ? "0.5px solid rgba(255,255,255,.1)" : "none", boxShadow: ios ? "none" : "0 -2px 8px rgba(0,0,0,.5)" };
+const vars = { "--sb": frame ? (ios ? "54px" : "30px") : "env(safe-area-inset-top, 0px)", "--hh": ios ? "48px" : "56px", "--nh": ios ? "50px" : "64px", "--sab": frame ? (ios ? "24px" : "14px") : "env(safe-area-inset-bottom, 0px)", "--top": "calc(var(--sb) + var(--hh))" };
+const rootStyle = frame ? { ...vars, width: 390, height: 784, background: C.bg, borderRadius: ios ? 48 : 30, border: (ios ? 8 : 6) + "px solid #1a1d22" } : { ...vars, position: "fixed", inset: 0, background: C.bg };
+const navs = [["agenda", "Agenda", CalendarClock], ["cli", "CLI Add", Terminal], ["health", "Health", HeartPulse], ["areas", "Areas", LayoutGrid]];
+const hh = String(clock.getHours()).padStart(2, "0") + ":" + String(clock.getMinutes()).padStart(2, "0");
+ 
+const TaskRow = ({ t }) => (
+<button onClick={() => setDone((d) => ({ ...d, [t.id]: !d[t.id] }))} className="w-full flex gap-3 text-left">
+<span className="w-11 text-xs pt-3 tabular-nums" style={{ color: C.t2 }}>{fmt(t.t)}</span>
+<span className="self-stretch" style={{ borderLeft: `3px ${t.flex ? "dashed" : "solid"} ${done[t.id] ? C.em : C.blue}` }} />
+<Card className="flex-1 flex items-center gap-3">
+<div className="flex-1 min-w-0">
+<span className="text-[10px] font-semibold" style={{ color: C.blue }}>{t.id}</span>{t.pri === "High" && <span className="text-[10px] font-semibold ml-1.5" style={{ color: C.red }}>High</span>}
+<p className="text-sm" style={{ color: done[t.id] ? C.t3 : C.t1, textDecoration: done[t.id] ? "line-through" : "none" }}>{t.title}</p>
+{t.notes && <p className="text-xs" style={{ color: C.t3 }}>{t.notes}</p>}
+</div>
+<span className="w-6 h-6 rounded-full border flex items-center justify-center" style={{ borderColor: done[t.id] ? C.em : C.line, background: done[t.id] ? C.em : "transparent" }}>{done[t.id] && <Check size={14} color="#fff" />}</span>
+</Card>
+</button>
+);
+ 
+const dateBar = (
+<div className="flex items-center gap-1 pt-1 pb-2">
+<button onClick={() => setSelDate(addDays(selDate, -1))} aria-label="Previous day" className="w-6 h-12 shrink-0 rounded-lg flex items-center justify-center" style={{ background: C.card, color: C.t2 }}><ChevronLeft size={16} /></button>
+<div className="flex-1 min-w-0 flex gap-1">
+{[-3, -2, -1, 0, 1, 2, 3].map((o) => {
+const d = addDays(selDate, o), on = d === selDate, has = tasks.some((t) => t.date === d && !off[t.cat]);
+return (
+<button key={d} onClick={() => setSelDate(d)} className="flex-1 min-w-0 h-12 rounded-xl flex flex-col items-center justify-center" style={{ background: on ? C.blue : C.card, color: on ? "#fff" : C.t2 }}>
+<span className="text-[9px] uppercase leading-none">{DAYS[(new Date(d + "T00:00:00").getDay() + 6) % 7]}</span>
+<span className="text-sm font-semibold tabular-nums leading-tight" style={{ color: on ? "#fff" : d === TODAY_STR ? C.blue : C.t1 }}>{d.slice(8)}</span>
+<span className="w-1 h-1 rounded-full" style={{ background: has ? (on ? "#fff" : C.em) : "transparent" }} />
+</button>
+);
+})}
+</div>
+<button onClick={() => setSelDate(addDays(selDate, 1))} aria-label="Next day" className="w-6 h-12 shrink-0 rounded-lg flex items-center justify-center" style={{ background: C.card, color: C.t2 }}><ChevronRight size={16} /></button>
+<button onClick={() => setCal({ y: +selDate.slice(0, 4), m: +selDate.slice(5, 7) - 1 })} aria-label="Open calendar" className="w-9 h-12 shrink-0 rounded-xl flex items-center justify-center" style={{ background: C.card, color: C.blue }}><CalendarDays size={18} /></button>
+</div>
+);
+const agendaChips = (
+<div className="flex items-center gap-2 pb-2">
+<div className="flex-1 min-w-0 flex gap-2 overflow-x-auto">
+{agendaCats.length > 0 && <Chip on={!selCat} onClick={() => setACat(null)}>All {todayTasks.filter((t) => !done[t.id]).length || "✓"}</Chip>}
+{agendaCats.map(([c, n]) => <Chip key={c} on={selCat === c} onClick={() => setACat(selCat === c ? null : c)}>{c} {n || "✓"}</Chip>)}
+</div>
+<button onClick={() => setSecs(true)} className="rounded-xl px-3 py-1.5 shrink-0" style={{ background: C.card, color: C.blue }} aria-label="Show or hide sections"><Eye size={16} /></button>
+</div>
+);
+const Agenda = (
+<div className="space-y-4">
+{shown.length > 0 ? agendaDates.map((d) => (
+<div key={d}>
+<h3 className="text-sm font-semibold mb-2">{d === TODAY_STR ? "Today" : d === addDays(TODAY_STR, 1) ? "Tomorrow" : new Date(d + "T00:00:00").toLocaleDateString("en-GB", { weekday: "long" })} <span className="font-normal text-xs" style={{ color: C.t2 }}>· {d}</span></h3>
+<div className="space-y-2">{shown.filter((t) => t.date === d).map((t) => <TaskRow key={t.id} t={t} />)}</div>
+</div>
+)) : <Empty>Nothing scheduled for {selDate === TODAY_STR ? "today" : selDate}.</Empty>}
+{vBacklog.length > 0 && (
+<Card className="border" style={{ background: C.card, borderColor: C.line }}>
+<button onClick={() => setDrawer(!drawer)} className="w-full flex justify-between items-center text-sm font-semibold">Unassigned backlog ({vBacklog.length}){drawer ? <ChevronDown size={16} /> : <ChevronUp size={16} />}</button>
+{drawer && vBacklog.map((b) => (
+<div key={b.id} className="flex items-center gap-2 pt-3">
+{b.img && <img src={b.img} alt="" className="w-10 h-10 rounded-lg object-cover shrink-0" />}<div className="flex-1 min-w-0" onClick={() => b.text && setOpenB(openB === b.id ? null : b.id)}><span className="text-[10px] font-semibold" style={{ color: C.am }}>{b.id}</span><p className="text-sm truncate">{b.title}</p>{b.notes && <p className="text-xs" style={{ color: C.t2, display: "-webkit-box", WebkitLineClamp: openB === b.id ? 99 : 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{b.notes}</p>}{openB === b.id && b.text && <pre className="text-[11px] whitespace-pre-wrap mt-1 p-2 rounded-lg" style={{ background: C.bg, color: C.t2 }}>{b.text}</pre>}{b.text && openB !== b.id && <span className="text-[10px]" style={{ color: C.blue }}>Tap to view full text</span>}</div>
+<button onClick={() => schedule(b)} className="text-xs font-semibold rounded-lg px-2.5 py-1.5" style={{ background: "#0084FF22", color: C.blue }}>+ Schedule</button>
+</div>
+))}
+</Card>
+)}
+</div>
+);
+ 
+const Cli = (
+<div className="space-y-4">
+<textarea value={cli} onChange={(e) => setCli(e.target.value)} rows={4} placeholder="=PT Buy Groceries, 2026-09-24 10:00, High Priority" className="w-full rounded-xl p-3 text-sm font-mono outline-none border" style={{ background: "#050608", borderColor: C.line, color: C.em }} />
+<div className="grid grid-cols-3 gap-2">
+{Object.keys(CODES).map((k) => <button key={k} onClick={() => setCli(`=${k} `)} className="rounded-xl py-2 text-left px-3" style={{ background: C.card }}><span className="text-sm font-mono font-semibold" style={{ color: C.blue }}>={k}</span><span className="block text-[10px]" style={{ color: C.t2 }}>{CODE_NAMES[k]}</span></button>)}
+</div>
+{preview ? (
+<Card className="space-y-2">
+<div className="flex justify-between text-xs"><span style={{ color: C.t2 }}>Auto ID</span><span className="font-mono font-semibold" style={{ color: C.blue }}>{preview.id}</span></div>
+<div className="flex justify-between text-xs"><span style={{ color: C.t2 }}>Category</span><span>{preview.cat} · {CODE_NAMES[preview.code]}</span></div>
+<div className="flex justify-between text-xs gap-4"><span style={{ color: C.t2 }}>Title</span><span className="text-right">{preview.title || "—"}</span></div>
+<div className="flex gap-2 flex-wrap">
+{(preview.date || preview.time) && <span className="text-[11px] px-2 py-1 rounded-full" style={{ background: "#0084FF22", color: C.blue }}>{[preview.date, preview.time].filter(Boolean).join(" ")}</span>}
+{preview.pr && <span className="text-[11px] px-2 py-1 rounded-full" style={{ background: preview.pr.toLowerCase() === "high" ? "#EF444422" : "#F59E0B22", color: preview.pr.toLowerCase() === "high" ? C.red : C.am }}>{preview.pr} priority</span>}
+</div>
+{Object.values(cliErrs).map((e) => <Err key={e} m={e} />)}
+<button onClick={runCli} className="w-full rounded-xl py-2.5 text-sm font-semibold disabled:opacity-40" style={{ background: C.blue }}>Add to backlog</button>
+</Card>
+) : <Empty>Start with a shortcode like =PT to see the parsed result.</Empty>}
+</div>
+);
+ 
+const Health = (
+<div className="space-y-4">
+{todayDoses.length > 0 && !off.Health && (
+<Card>
+<div className="flex justify-between items-center">
+<div><p className="text-sm font-semibold">Breakfast anchor</p><p className="text-xs" style={{ color: C.t2 }}>Every dose time follows this</p></div>
+<div className="flex items-center gap-3">
+<button onClick={() => setShift((s) => s - 15)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.line }}><Minus size={16} /></button>
+<span className="text-xl font-semibold tabular-nums w-16 text-center">{fmt(anchors.Breakfast)}</span>
+<button onClick={() => setShift((s) => s + 15)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.line }}><Plus size={16} /></button>
+</div>
+</div>
+<div className="grid gap-2 mt-3 text-center" style={{ gridTemplateColumns: "repeat(" + mealCards.length + ", 1fr)" }}>{mealCards.map(({ n }) => <div key={n}><p className="text-[10px]" style={{ color: C.t3 }}>{n}</p><p className="text-xs tabular-nums">{fmt(anchors[n])}</p></div>)}</div>
+</Card>
+)}
+{off.Health && <Card className="text-center space-y-2"><p className="text-sm" style={{ color: C.t2 }}>Health is hidden.</p><button onClick={() => setOff({ ...off, Health: false })} className="rounded-xl px-4 py-2 text-sm font-semibold" style={{ background: C.blue }}>Show Health</button></Card>}
+{!off.Health && doses.map((m) => (
+<Card key={m.id} className="space-y-3">
+<div className="flex justify-between items-start">
+<div><p className="text-sm font-semibold">{m.name} <span style={{ color: C.t2 }}>{m.dose}</span></p><p className="text-xs" style={{ color: C.t2 }}>{m.meal} · alert {fmt(m.at - 30)}</p></div>
+<span className="text-lg font-semibold tabular-nums" style={{ color: C.blue }}>{fmt(m.at)}</span>
+</div>
+<div className="flex gap-1">
+{DAYS.map((d, i) => <button key={d} onClick={() => setFreq((f) => ({ ...f, [m.id]: f[m.id].map((v, j) => (j === i ? (v ? 0 : 1) : v)) }))} className="flex-1 rounded-lg py-1.5 text-[11px] font-medium" style={{ background: freq[m.id][i] ? C.blue : C.line, color: freq[m.id][i] ? "#fff" : C.t2 }}>{d}</button>)}
+</div>
+<div><div className="flex justify-between text-[11px] mb-1" style={{ color: C.t2 }}><span>Day {m.day}/{m.total}</span><span>{m.total - m.day} left</span></div><Bar pct={(m.day / m.total) * 100} color={m.total - m.day <= 3 ? C.am : C.em} /></div>
+<div className="flex flex-wrap gap-2 items-center">
+{m.fasting && <span className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full" style={{ background: "#F59E0B22", color: C.am }}><Droplet size={11} />Fasting lab required</span>}
+{m.refill && <span className="text-[11px] px-2 py-1 rounded-full" style={{ background: "#EF444422", color: C.red }}>Low stock</span>}
+{consultState[m.id] && <span className="text-[11px] px-2 py-1 rounded-full" style={{ background: "#10B98122", color: C.em }}>Consult saved{consultState[m.id].follow ? " · follow-up" : ""}</span>}
+</div>
+{m.total - m.day <= 3 && <button onClick={() => { setConsult(m); setCForm({ follow: null, note: "" }); }} className="w-full rounded-xl py-2.5 text-sm font-semibold border" style={{ borderColor: C.am, color: C.am }}>Simulate 30-day prescription end</button>}
+</Card>
+))}
+</div>
+);
+ 
+const areaRow = (t) => {
+const isD = !!done[t.id];
+const when = t.t != null ? (t.date !== TODAY_STR ? t.date + " " : "") + fmt(t.t) : "Unscheduled";
+const tick = <button onClick={() => setDone((d) => ({ ...d, [t.id]: !d[t.id] }))} aria-label="Toggle complete" className="w-6 h-6 shrink-0 rounded-full border flex items-center justify-center" style={{ borderColor: isD ? C.em : C.line, background: isD ? C.em : "transparent" }}>{isD && <Check size={14} color="#fff" />}</button>;
+const acts = <div className="flex gap-1 shrink-0"><button onClick={() => openEd(t, "edit")} aria-label="Edit" className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: C.line, color: C.t2 }}><Pencil size={13} /></button><button onClick={() => openEd(t, "resched")} aria-label="Reschedule" className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: C.line, color: C.blue }}><CalendarClock size={13} /></button></div>;
+const tag = <span className="text-[10px] font-semibold" style={{ color: t.id.startsWith("BK") ? C.am : C.blue }}>{t.id}</span>;
+const pr = t.pri === "High" ? <span className="text-[10px] font-semibold ml-1.5" style={{ color: C.red }}>High</span> : t.pri === "Low" ? <span className="text-[10px] ml-1.5" style={{ color: C.t3 }}>Low</span> : null;
+const tx = { color: isD ? C.t3 : C.t1, textDecoration: isD ? "line-through" : "none" };
+return compact ? (
+<div key={t.id} className="flex items-center gap-2 rounded-xl px-2.5 py-2" style={{ background: C.card }}>{tick}<div className="flex-1 min-w-0 flex items-center gap-1.5">{tag}<span className="text-sm truncate" style={tx}>{t.title}</span></div><span className="text-[11px] tabular-nums shrink-0" style={{ color: C.t2 }}>{t.t != null ? fmt(t.t) : "—"}</span>{acts}</div>
+) : (
+<Card key={t.id} className="flex gap-3 items-start"><span className="mt-0.5">{tick}</span><div className="flex-1 min-w-0">{tag}{pr}<p className="text-sm" style={tx}>{t.title}</p>{t.notes && <p className="text-xs" style={{ color: C.t3 }}>{t.notes}</p>}<p className="text-[11px] mt-0.5" style={{ color: C.t2 }}>{t.cat} · {when}</p></div>{acts}</Card>
+);
+};
+const areaControls = (
+<div className="space-y-2 pb-2">
+<div className="relative">
+<span className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: C.t3 }}><Search size={16} /></span>
+<input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search title or ID (e.g. PT001)" className="w-full rounded-xl pl-9 pr-3 py-2.5 text-sm outline-none border" style={{ background: C.card, borderColor: C.line, color: C.t1 }} />
+</div>
+{areaTiles.length > 0 && (
+<div className="flex gap-2 overflow-x-auto">
+<Chip on={!selArea} onClick={() => setArea(null)}>All {areaTiles.reduce((a, x) => a + x[1], 0)}</Chip>
+{areaTiles.map(([c, n]) => <Chip key={c} on={selArea === c} onClick={() => setArea(selArea === c ? null : c)}>{c} {n}</Chip>)}
+</div>
+)}
+<div className="flex gap-2 items-center">
+<select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="flex-1 min-w-0 rounded-xl px-3 py-2 text-xs outline-none" style={{ background: C.card, color: C.t1 }}>
+<option value="time">Sort: Time / schedule</option>
+<option value="priority">Sort: Priority (high to low)</option>
+<option value="category">Sort: Category</option>
+</select>
+<div className="flex rounded-xl overflow-hidden" style={{ background: C.card }}>
+{[[false, LayoutGrid], [true, List]].map(([v, I]) => <button key={String(v)} onClick={() => setCompact(v)} className="px-3 py-2" style={{ background: compact === v ? C.blue : "transparent", color: compact === v ? "#fff" : C.t2 }} aria-label={v ? "Compact view" : "Card view"}><I size={16} /></button>)}
+</div>
+<button onClick={() => setSecs(true)} className="rounded-xl px-3 py-2" style={{ background: C.card, color: C.blue }} aria-label="Show or hide sections"><Eye size={16} /></button>
+</div>
+</div>
+);
+const Areas = (
+<div className="space-y-3">
+<div className={compact ? "space-y-1" : "space-y-2"}>
+<p className="text-xs" style={{ color: C.t2 }}>{selArea || "All areas"} · {areaList.length} item{areaList.length === 1 ? "" : "s"}</p>
+{areaList.length ? areaList.map(areaRow) : <Empty>{q ? "No tasks match your search." : "Nothing here yet."}</Empty>}
+</div>
+{!off.Finance && (
+<Card className="space-y-3">
+<p className="text-sm font-semibold">Finance overview</p>
+<div><div className="flex justify-between text-xs mb-1"><span style={{ color: C.t2 }}>Monthly budget</span><span>62,400 / 80,000</span></div><Bar pct={78} color={C.blue} /></div>
+<div><div className="flex justify-between text-xs mb-1"><span style={{ color: C.t2 }}>Credit balance</span><span>48,000 / 150,000</span></div><Bar pct={32} color={C.am} /></div>
+{TX.map(([n, a, inc]) => <div key={n} className="flex justify-between text-sm border-t pt-2" style={{ borderColor: C.line }}><span>{n}</span><span className="tabular-nums" style={{ color: inc ? C.em : C.red }}>{inc ? "+" : "−"}{a.toLocaleString()}</span></div>)}
+</Card>
+)}
+</div>
+);
+ 
+return (
+<div className={plat + (REAL ? "" : " min-h-screen flex flex-col items-center justify-center gap-3 p-4")} style={{ background: "#050608", color: C.t1, fontFamily: FONTS[plat] }}>
+<style>{PCSS}</style>
+{!REAL && <div className="flex rounded-full p-1 text-xs font-semibold" style={{ background: C.card }}>{[["ios", "iOS"], ["android", "Android"]].map(([p, l]) => <button key={p} onClick={() => setPlat(p)} className="rounded-full px-4 py-1.5" style={{ background: plat === p ? C.blue : "transparent", color: plat === p ? "#fff" : C.t2 }}>{l}</button>)}</div>}
+<div className="zs relative overflow-hidden flex flex-col" style={rootStyle}>
+<div className="shrink-0" style={topBar}>
+{frame ? <StatusBar plat={plat} time={hh} /> : <div style={{ height: "var(--sb)" }} />}
+<header className="flex items-center gap-2 px-4" style={{ height: "var(--hh)" }}>
+<h1 style={{ fontSize: ios ? 22 : 20, fontWeight: ios ? 700 : 500, letterSpacing: ios ? "-0.02em" : 0 }}>ZenSchedule</h1>
+<span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "#0084FF22", color: C.blue }}>ZenOx</span>
+<span className="ml-auto flex items-center gap-1 text-[10px] font-semibold" style={{ color: C.am }}><WifiOff size={12} />OFFLINE</span>
+<button onClick={() => setScan({ stage: "pick", mode: "auto" })} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.card, color: C.blue }} aria-label="Scan document"><Camera size={18} /></button>
+<button onClick={() => { setMDate(selDate); setMMode("form"); setMTried(false); setManual(true); }} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.blue }} aria-label="Quick add"><Plus size={18} color="#fff" /></button>
+</header>
+{(tab === "agenda" || tab === "health") && <div className="px-4">{dateBar}</div>}
+{tab === "agenda" && <div className="px-4">{agendaChips}</div>}
+{tab === "areas" && <div className="px-4 pt-1">{areaControls}</div>}
+</div>
+<main className="flex-1 min-h-0 overflow-y-auto px-4 pt-3" style={{ paddingBottom: "calc(var(--nh) + var(--sab) + 16px)" }}>{tab === "agenda" ? Agenda : tab === "cli" ? Cli : tab === "health" ? Health : Areas}</main>
+<nav className="absolute bottom-0 left-0 right-0 flex items-start px-2" style={navBar}>
+{navs.map(([k, l, I]) => { const on = tab === k; return (
+<button key={k} onClick={() => setTab(k)} className="flex-1 flex flex-col items-center gap-0.5 pt-2 font-medium" style={{ color: on ? C.blue : C.t3, fontSize: ios ? 10 : 12 }}>
+<span className="flex items-center justify-center" style={ios ? {} : { width: 56, height: 28, borderRadius: 14, background: on ? "#0084FF33" : "transparent", color: on ? C.t1 : C.t3 }}><I size={ios ? 24 : 22} /></span>{l}
+</button>
+); })}
+</nav>
+{frame && <span className="absolute left-1/2 -translate-x-1/2 rounded-full" style={{ zIndex: 26, bottom: ios ? 8 : 6, width: ios ? 134 : 108, height: ios ? 5 : 4, background: "#F3F5F7aa" }} />}
+ 
+{cal && (() => {
+const lead = (new Date(cal.y, cal.m, 1).getDay() + 6) % 7;
+const n = new Date(cal.y, cal.m + 1, 0).getDate();
+const iso = (d) => cal.y + "-" + String(cal.m + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+const go = (k) => { const d = new Date(cal.y, cal.m + k, 1); setCal({ y: d.getFullYear(), m: d.getMonth() }); };
+const sel = { background: C.card, color: C.t1 };
+return (
+<Sheet title="Select date" onClose={() => setCal(null)}>
+<div className="flex items-center gap-2">
+<button onClick={() => go(-1)} aria-label="Previous month" className="w-9 h-9 rounded-xl flex items-center justify-center" style={sel}><ChevronLeft size={16} /></button>
+<select value={cal.m} onChange={(e) => setCal({ ...cal, m: +e.target.value })} className="flex-1 min-w-0 rounded-xl px-2 py-2 text-sm outline-none" style={sel}>{Array.from({ length: 12 }, (_, i) => <option key={i} value={i}>{new Date(2000, i, 1).toLocaleString("en-GB", { month: "long" })}</option>)}</select>
+<select value={cal.y} onChange={(e) => setCal({ ...cal, y: +e.target.value })} className="rounded-xl px-2 py-2 text-sm outline-none" style={sel}>{Array.from({ length: 31 }, (_, i) => 2015 + i).map((y) => <option key={y}>{y}</option>)}</select>
+<button onClick={() => go(1)} aria-label="Next month" className="w-9 h-9 rounded-xl flex items-center justify-center" style={sel}><ChevronRight size={16} /></button>
+</div>
+<div className="grid grid-cols-7 gap-1 text-center">
+{DAYS.map((d) => <span key={d} className="text-[10px] uppercase" style={{ color: C.t3 }}>{d}</span>)}
+{Array.from({ length: lead }, (_, i) => <span key={"b" + i} />)}
+{Array.from({ length: n }, (_, i) => i + 1).map((d) => {
+const k = iso(d), on = k === selDate, has = tasks.some((t) => t.date === k && !off[t.cat]);
+return (
+<button key={d} onClick={() => { setSelDate(k); setCal(null); }} className="h-10 rounded-xl flex flex-col items-center justify-center text-sm tabular-nums" style={{ background: on ? C.blue : "transparent", color: on ? "#fff" : k === TODAY_STR ? C.blue : C.t1, border: k === TODAY_STR && !on ? "1px solid " + C.blue : "1px solid transparent" }}>
+{d}<span className="w-1 h-1 rounded-full" style={{ background: has ? (on ? "#fff" : C.em) : "transparent" }} />
+</button>
+);
+})}
+</div>
+<button onClick={() => { setSelDate(TODAY_STR); setCal(null); }} className="w-full rounded-xl py-3 text-sm font-semibold" style={{ background: C.card, color: C.blue }}>Go to today</button>
+</Sheet>
+);
+})()}
+{secs && (
+<Sheet title="Show / hide sections" onClose={() => setSecs(false)}>
+<p className="text-xs" style={{ color: C.t2 }}>Untick a section to hide its tasks, cards and medication schedule everywhere. Tick it again to bring them back.</p>
+{secCats.map(([c, n]) => (
+<button key={c} onClick={() => setOff({ ...off, [c]: !off[c] })} className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5" style={{ background: C.card }}>
+<span className="w-5 h-5 rounded-md border flex items-center justify-center" style={{ borderColor: off[c] ? C.t3 : C.blue, background: off[c] ? "transparent" : C.blue }}>{!off[c] && <Check size={14} color="#fff" />}</span>
+<span className="flex-1 text-left text-sm" style={{ color: off[c] ? C.t3 : C.t1 }}>{c}</span>
+<span className="text-xs" style={{ color: C.t2 }}>{n}</span>
+</button>
+))}
+</Sheet>
+)}
+{ed && (
+<Sheet title={(ed.mode === "edit" ? "Edit " : "Reschedule ") + ed.item.id} onClose={() => setEd(null)}>
+{ed.mode === "edit" && <>
+<input value={ed.title} onChange={(e) => setEd({ ...ed, title: e.target.value })} placeholder="Title" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
+<Err m={edErrs.title} />
+<input value={ed.notes} onChange={(e) => setEd({ ...ed, notes: e.target.value })} placeholder="Notes" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
+<Err m={edErrs.notes} />
+<div className="flex flex-wrap gap-1.5">{CATS.map((c) => <Chip key={c} on={ed.cat === c} onClick={() => setEd({ ...ed, cat: c })}>{c}</Chip>)}</div>
+<div className="flex gap-2">{["Low", "Medium", "High"].map((p) => <button key={p} onClick={() => setEd({ ...ed, pri: p })} className="flex-1 rounded-xl py-2 text-xs font-semibold" style={{ background: ed.pri === p ? (p === "High" ? C.red : p === "Medium" ? C.am : C.em) : C.card, color: ed.pri === p ? "#fff" : C.t2 }}>{p}</button>)}</div>
+</>}
+{ed.mode === "resched" && <p className="text-sm">{ed.title}</p>}
+<div className="flex gap-2"><Chip on={ed.sched} onClick={() => setEd({ ...ed, sched: true })}>Scheduled</Chip><Chip on={!ed.sched} onClick={() => setEd({ ...ed, sched: false })}>Backlog</Chip></div>
+{ed.sched && <div className="flex gap-2 items-center">
+<input type="date" value={ed.date} onChange={(e) => setEd({ ...ed, date: e.target.value || TODAY_STR })} className="flex-1 min-w-0 rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1, colorScheme: "dark" }} />
+<select value={ed.hh} onChange={(e) => setEd({ ...ed, hh: e.target.value })} className="rounded-xl px-2 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }}>{Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0")).map((v) => <option key={v}>{v}</option>)}</select>
+<span style={{ color: C.t2 }}>:</span>
+<select value={ed.mm} onChange={(e) => setEd({ ...ed, mm: e.target.value })} className="rounded-xl px-2 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }}>{Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, "0")).map((v) => <option key={v}>{v}</option>)}</select>
+</div>}
+<Err m={edErrs.date} /><Err m={edErrs.time} />
+<button disabled={Object.keys(edErrs).length > 0} onClick={saveEdit} className="w-full rounded-xl py-3 text-sm font-semibold disabled:opacity-40" style={{ background: C.blue }}>Save changes</button>
+</Sheet>
+)}
+{scan && (
+<Sheet title="Scan document" onClose={() => setScan(null)}>
+{scan.stage === "pick" && <>
+<p className="text-xs" style={{ color: C.t2 }}>Take a photo or upload a receipt, bill, prescription or doctor's note.</p>
+<div className="flex gap-2">{[["auto", "Auto-detect"], ["receipt", "Receipt"], ["rx", "Prescription"]].map(([k, l]) => <Chip key={k} on={scan.mode === k} onClick={() => setScan({ ...scan, mode: k })}>{l}</Chip>)}</div>
+<div className="grid grid-cols-2 gap-2">
+<label className="rounded-xl py-3 text-sm font-semibold text-center cursor-pointer" style={{ background: C.blue }}><input type="file" accept="image/*" capture="environment" hidden onChange={onFile} />Take photo</label>
+<label className="rounded-xl py-3 text-sm font-semibold text-center cursor-pointer" style={{ background: C.card }}><input type="file" accept="image/*" hidden onChange={onFile} />Upload image</label>
+</div>
+</>}
+{scan.stage === "busy" && <div className="space-y-2 py-4"><p className="text-sm text-center" style={{ color: C.t2 }}>Reading text… {scan.progress}%</p><Bar pct={scan.progress} color={C.blue} /></div>}
+{scan.stage === "error" && <>
+<p className="text-sm" style={{ color: C.red }}>{scan.err}</p>
+<button onClick={() => setScan({ stage: "pick", mode: scan.mode })} className="w-full rounded-xl py-3 text-sm font-semibold" style={{ background: C.card }}>Try again</button>
+</>}
+{scan.stage === "done" && <>
+<div className="flex gap-3"><img src={scan.img} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" /><div className="min-w-0"><span className="text-[10px] font-semibold" style={{ color: C.am }}>{CODES[scan.res.code]} · {CODE_NAMES[scan.res.code]}</span><p className="text-sm font-semibold">{scan.res.title}</p><p className="text-xs" style={{ color: C.t2 }}>{scan.res.summary}</p></div></div>
+{scan.text && <pre className="text-[11px] whitespace-pre-wrap max-h-32 overflow-y-auto p-2 rounded-lg" style={{ background: C.card, color: C.t2 }}>{scan.text}</pre>}
+<div className="flex gap-2">
+<button onClick={() => setScan({ stage: "pick", mode: scan.mode })} className="flex-1 rounded-xl py-3 text-sm font-semibold" style={{ background: C.card }}>Rescan</button>
+<button onClick={saveScan} className="flex-1 rounded-xl py-3 text-sm font-semibold" style={{ background: C.blue }}>Save to backlog</button>
+</div>
+</>}
+</Sheet>
+)}
+{consult && (
+<Sheet title={`${consult.name}: doctor consultation`} onClose={() => setConsult(null)}>
+<p className="text-sm" style={{ color: C.t2 }}>Is a follow-up appointment needed?</p>
+<div className="flex gap-2">{[["Yes", true], ["No", false]].map(([l, v]) => <button key={l} onClick={() => setCForm({ ...cForm, follow: v })} className="flex-1 rounded-xl py-2.5 text-sm font-semibold" style={{ background: cForm.follow === v ? C.blue : C.card }}>{l}</button>)}</div>
+{consult.fasting && <textarea value={cForm.note} onChange={(e) => setCForm({ ...cForm, note: e.target.value })} rows={3} placeholder="Fasting lab note (optional)" className="w-full rounded-xl p-3 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />}
+<button disabled={cForm.follow === null} onClick={() => { setConsultState((s) => ({ ...s, [consult.id]: cForm })); setConsult(null); }} className="w-full rounded-xl py-3 text-sm font-semibold disabled:opacity-40" style={{ background: C.blue }}>Save consultation</button>
+</Sheet>
+)}
+{manual && (
+<Sheet title="New task" onClose={() => setManual(false)}>
+<div className="flex gap-2"><Chip on={mMode === "form"} onClick={() => setMMode("form")}>Form</Chip><Chip on={mMode === "cmd"} onClick={() => setMMode("cmd")}>Quick command</Chip></div>
+{mMode === "cmd" && <>
+<input autoFocus value={cli} onChange={(e) => setCli(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && runCli()) setManual(false); }} placeholder="=PT Call bank, 2026-10-01 10:00, High Priority" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none font-mono" style={{ background: "#050608", color: C.em }} />
+<div className="flex flex-wrap gap-1.5">{Object.keys(CODES).map((k) => <button key={k} onClick={() => setCli("=" + k + " ")} className="rounded-lg px-2.5 py-1.5 text-xs font-mono font-semibold" style={{ background: C.card, color: C.blue }}>={k}</button>)}</div>
+{preview ? (
+<Card className="space-y-1 text-xs">
+<div className="flex justify-between"><span style={{ color: C.t2 }}>ID</span><span className="font-mono font-semibold" style={{ color: C.blue }}>{preview.id}</span></div>
+<div className="flex justify-between"><span style={{ color: C.t2 }}>Category</span><span>{preview.cat}</span></div>
+<div className="flex justify-between gap-4"><span style={{ color: C.t2 }}>Title</span><span className="text-right">{preview.title || "—"}</span></div>
+{(preview.date || preview.time || preview.pr) && <div className="flex gap-2 flex-wrap pt-1">{(preview.date || preview.time) && <span className="px-2 py-0.5 rounded-full" style={{ background: "#0084FF22", color: C.blue }}>{[preview.date, preview.time].filter(Boolean).join(" ")}</span>}{preview.pr && <span className="px-2 py-0.5 rounded-full" style={{ background: "#F59E0B22", color: C.am }}>{preview.pr} priority</span>}</div>}
+</Card>
+) : <p className="text-xs" style={{ color: C.t3 }}>Start with a shortcode like =PT, or type plain text to save it to the backlog.</p>}
+{Object.values(cliErrs).map((e) => <Err key={e} m={e} />)}
+<button disabled={!cli.trim()} onClick={() => { if (runCli()) setManual(false); }} className="w-full rounded-xl py-3 text-sm font-semibold disabled:opacity-40" style={{ background: C.blue }}>Add</button>
+</>}
+{mMode === "form" && <>
+<div className="grid grid-cols-5 gap-1.5">{Object.keys(CODES).map((k) => <button key={k} onClick={() => setMCode(k)} className="rounded-lg py-2 text-xs font-mono font-semibold" style={{ background: mCode === k ? C.blue : C.card }}>{k}</button>)}</div>
+<p className="text-xs" style={{ color: C.t2 }}>{CODE_NAMES[mCode]} · {CODES[mCode]}</p>
+<input value={mTitle} onChange={(e) => setMTitle(e.target.value)} placeholder="Task title" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
+<Err m={mErrs.title} />
+<input value={mNotes} onChange={(e) => setMNotes(e.target.value)} placeholder="Notes (optional)" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
+<Err m={mErrs.notes} />
+<div className="flex gap-2">
+<Chip on={mSched} onClick={() => setMSched(true)}>Schedule</Chip>
+<Chip on={!mSched} onClick={() => setMSched(false)}>Backlog</Chip>
+<Chip on={mKeys} onClick={() => setMKeys(!mKeys)}>Quantity</Chip>
+</div>
+<div className="flex gap-2 items-center">
+<input type="date" value={mDate} onChange={(e) => setMDate(e.target.value || TODAY_STR)} className="flex-1 min-w-0 rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1, colorScheme: "dark" }} />
+{mSched && <>
+<select value={mHH} onChange={(e) => setMHH(e.target.value)} className="rounded-xl px-2 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }}>{Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0")).map((v) => <option key={v}>{v}</option>)}</select>
+<span style={{ color: C.t2 }}>:</span>
+<select value={mMM} onChange={(e) => setMMM(e.target.value)} className="rounded-xl px-2 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }}>{Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, "0")).map((v) => <option key={v}>{v}</option>)}</select>
+</>}
+</div>
+<Err m={mErrs.date} /><Err m={mErrs.time} />
+<div className="flex gap-2">{["Low", "Medium", "High"].map((p) => <button key={p} onClick={() => setMPri(p)} className="flex-1 rounded-xl py-2 text-xs font-semibold" style={{ background: mPri === p ? (p === "High" ? C.red : p === "Medium" ? C.am : C.em) : C.card, color: mPri === p ? "#fff" : C.t2 }}>{p}</button>)}</div>
+{mKeys && <>
+<div className="rounded-xl px-3 py-2 text-right text-xl font-semibold tabular-nums" style={{ background: C.card, color: mNum ? C.t1 : C.t3 }}>{mNum || "0"}</div>
+<Err m={mErrs.qty} />
+<div className="grid grid-cols-3 gap-2">{["1", "2", "3", "4", "5", "6", "7", "8", "9", "C", "0", "⌫"].map((k) => <button key={k} onClick={() => press(k)} className="rounded-xl py-3 text-base font-semibold flex items-center justify-center" style={{ background: C.card, color: k === "C" ? C.red : C.t1 }}>{k === "⌫" ? <Delete size={18} /> : k}</button>)}</div>
+</>}
+<button onClick={confirmManual} className="w-full rounded-xl py-3 text-sm font-semibold disabled:opacity-40" style={{ background: C.blue }}>{mSched ? "Schedule at " + mHH + ":" + mMM : "Save to backlog"}</button>
+</>}
+</Sheet>
+)}
+{toast && <div className="absolute left-4 right-4 z-40 rounded-xl px-3 py-2 text-sm text-center" style={{ background: C.em, color: "#fff", bottom: "calc(var(--nh) + var(--sab) + 12px)" }}>{toast}</div>}
+</div>
+</div>
+);
+}
+ 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 </script>
 </body>
 </html>
+ 

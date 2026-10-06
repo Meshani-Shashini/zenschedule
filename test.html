@@ -42,7 +42,7 @@ const ChevronLeft = mk('<path d="m15 18-6-6 6-6"/>');
 const ChevronRight = mk('<path d="m9 18 6-6-6-6"/>');
 const CalendarDays = mk('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>');
 const List = mk('<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>');
- 
+
 const C = { bg: "#0D0F12", card: "#181D24", line: "#22272E", blue: "#0084FF", em: "#10B981", am: "#F59E0B", red: "#EF4444", t1: "#F3F5F7", t2: "#8A93A3", t3: "#5C6472" };
 const CATS = ["Personal", "Official", "Health", "Fitness", "Home", "Finance", "Maintenance", "Entertainment"];
 const CODES = { PT: "Personal", PS: "Personal", OT: "Official", OM: "Official", HC: "Health", FN: "Fitness", HM: "Home", FI: "Finance", MT: "Maintenance", EN: "Entertainment" };
@@ -54,7 +54,7 @@ const TODAY_STR = NOW.getFullYear() + "-" + String(NOW.getMonth() + 1).padStart(
 const MEALS = [["Breakfast", 0], ["Lunch", 300], ["Dinner", 660], ["Bedtime", 900]];
 const fmt = (m) => { m = ((m % 1440) + 1440) % 1440; return String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0"); };
 const all7 = [1, 1, 1, 1, 1, 1, 1];
- 
+
 const MEDS = [
 { id: "m1", name: "Metformin", dose: "500 mg", meal: "Breakfast", off: 0, day: 28, total: 30, refill: true, fasting: false },
 { id: "m2", name: "Lisinopril", dose: "10 mg", meal: "Breakfast", off: -30, day: 12, total: 30, refill: false, fasting: false },
@@ -73,14 +73,14 @@ const BACKLOG0 = [
 { id: "BK002", cat: "Entertainment", title: "Watch the documentary", notes: "" },
 ];
 const TX = [["Salary", 85000, 1], ["Groceries", 12400, 0], ["Electricity", 6800, 0], ["Freelance", 15000, 1]];
- 
+
 const Card = ({ children, className = "", ...p }) => <div className={`rounded-2xl p-3 zs-card ${className}`} style={{ background: C.card }} {...p}>{children}</div>;
 const Chip = ({ on, children, ...p }) => (
 <button {...p} className="shrink-0 rounded-full zs-chip px-3 py-1.5 text-xs font-medium border" style={{ background: on ? C.blue : "transparent", borderColor: on ? C.blue : C.line, color: on ? "#fff" : C.t2 }}>{children}</button>
 );
 const Empty = ({ children }) => <p className="text-center text-sm py-6" style={{ color: C.t3 }}>{children}</p>;
 const Bar = ({ pct, color }) => <div className="h-2 rounded-full overflow-hidden" style={{ background: C.line }}><div className="h-full rounded-full" style={{ width: `${Math.min(100, pct)}%`, background: color }} /></div>;
- 
+
 function parse(text, existing) {
 const m = text.trim().match(/^=([A-Za-z]{2})\s*(.*)$/s);
 if (!m) return null;
@@ -94,7 +94,7 @@ const pr = rest.match(/(high|medium|low)\s*priority/i)?.[1];
 const n = existing.filter((x) => x.id.startsWith(code)).length + 1;
 return { code, cat: CODES[code], title: parts[0] || "", date, time, pr, id: code + String(n).padStart(3, "0") };
 }
- 
+
 const loadTess = () => window.Tesseract ? Promise.resolve(window.Tesseract) : new Promise((res, rej) => { const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js"; s.onload = () => res(window.Tesseract); s.onerror = () => rej(new Error("OCR engine could not load. Check your internet connection.")); document.head.appendChild(s); });
 const scale = (file, w) => new Promise((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const im = new Image(); im.onerror = () => rej(new Error("Could not open this image.")); im.onload = () => { const k = Math.min(1, w / im.width); const c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height); res(c.toDataURL("image/jpeg", 0.85)); }; im.src = r.result; }; r.readAsDataURL(file); });
 function analyze(text, mode) {
@@ -160,6 +160,9 @@ return (
 </div>
 );
 };
+const LIM = { title: 30, notes: 90 };
+const p2 = (n) => String(n).padStart(2, "0");
+const isoOf = (d) => d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate());
 const LABELS = { title: "Title", notes: "Notes", date: "Date", time: "Time", qty: "Quantity" };
 // Reusable checks: each takes (value, { label, cat, data, ctx, ...ruleParams }) and returns an error string or null.
 const CHECKS = {
@@ -168,20 +171,21 @@ length: (v, o) => { const n = String(v ?? "").trim().length; return n && (n < o.
 pattern: (v, o) => (String(v ?? "").trim() && !o.re.test(v) ? o.label + " " + o.msg : null),
 range: (v, o) => (v === "" || v == null ? null : Number.isInteger(+v) && +v >= o.min && +v <= o.max ? null : o.label + " must be a whole number from " + o.min + " to " + o.max),
 dateValid: (v, o) => (!v || (/^\d{4}-\d{2}-\d{2}$/.test(v) && addDays(v, 0) === v) ? null : o.label + " is not a valid date"),
-dateNotPast: (v, o) => (!v || (o.ctx.orig && o.ctx.orig.date === v) || v >= o.ctx.today ? null : o.label + " cannot be in the past"),
-timeNotPast: (v, o) => { const d = o.data.date || o.ctx.today; return v == null || d !== o.ctx.today || v >= o.ctx.nowMin || (o.ctx.orig && o.ctx.orig.t === v && o.ctx.orig.date === d) ? null : o.label + " has already passed today"; },
+dateNotPast: (v, o) => (!v || (o.ctx.orig && o.ctx.orig.date === v) || v >= o.ctx.today ? null : o.label + " cannot be in the past. Choose today or a later date."),
+timeNotPast: (v, o) => { const d = o.data.date || o.ctx.today; return v == null || d !== o.ctx.today || v >= o.ctx.nowMin || (o.ctx.orig && o.ctx.orig.t === v && o.ctx.orig.date === d) ? null : o.label + " has already passed. Choose the current time or later."; },
+
 unique: (v, o) => { const t = String(v ?? "").trim().toLowerCase(); return t && o.ctx.items.some((x) => x.id !== o.ctx.id && x.cat === o.cat && x.title.trim().toLowerCase() === t && (x.date || "") === (o.data.date || "")) ? o.label + " already exists for this date" : null; },
 };
 // Rules per category. Personal is defined first; other categories use the default rules until they are configured.
 const RULES = {
 Personal: {
-title: [["required"], ["length", { min: 3, max: 60 }], ["pattern", { re: /[A-Za-z\u00C0-\uFFFF]/, msg: "must contain letters" }], ["unique"]],
-notes: [["length", { min: 0, max: 120 }]],
+title: [["required"], ["length", { min: 3, max: LIM.title }], ["pattern", { re: /[A-Za-z\u00C0-\uFFFF]/, msg: "must contain letters" }], ["unique"]],
+notes: [["length", { min: 0, max: LIM.notes }]],
 date: [["dateValid"], ["dateNotPast"]],
 time: [["timeNotPast"]],
 qty: [["range", { min: 1, max: 99 }]],
 },
-default: { title: [["required"], ["length", { min: 1, max: 80 }]], notes: [["length", { min: 0, max: 200 }]], date: [["dateValid"]] },
+default: { title: [["required"], ["length", { min: 1, max: LIM.title }]], notes: [["length", { min: 0, max: LIM.notes }]], date: [["dateValid"], ["dateNotPast"]], time: [["timeNotPast"]], qty: [["range", { min: 1, max: 99 }]] },
 };
 const validate = (cat, data, ctx) => {
 const rules = RULES[cat] || RULES.default, errs = {};
@@ -197,7 +201,7 @@ const Sheet = ({ title, onClose, children }) => (
 </div>
 </div>
 );
- 
+
 function App() {
 const [tab, setTab] = useState("agenda");
 const [plat, setPlat] = useState(REAL || "ios");
@@ -218,9 +222,9 @@ const [mCode, setMCode] = useState("PT");
 const [mTitle, setMTitle] = useState("");
 const [mNum, setMNum] = useState("");
 const [mNotes, setMNotes] = useState("");
-const [mDate, setMDate] = useState(TODAY_STR);
-const [mHH, setMHH] = useState("09");
-const [mMM, setMMM] = useState("00");
+const [mDate, setMDate] = useState(() => isoOf(new Date()));
+const [mHH, setMHH] = useState(() => p2(new Date().getHours()));
+const [mMM, setMMM] = useState(() => p2(new Date().getMinutes()));
 const [mPri, setMPri] = useState("Medium");
 const [mSched, setMSched] = useState(true);
 const [mKeys, setMKeys] = useState(false);
@@ -238,8 +242,8 @@ const [cal, setCal] = useState(null);
 const [mMode, setMMode] = useState("form");
 const [mTried, setMTried] = useState(false);
 const [clock, setClock] = useState(new Date());
-useEffect(() => { const i = setInterval(() => setClock(new Date()), 15000); return () => clearInterval(i); }, []);
- 
+useEffect(() => { const i = setInterval(() => setClock(new Date()), 5000); return () => clearInterval(i); }, []);
+
 const tasks = useMemo(() => [...extras].sort((a, b) => a.t - b.t), [extras]);
 const allItems = [...tasks, ...backlog];
 const anchors = useMemo(() => Object.fromEntries(MEALS.map(([n, o]) => [n, 480 + shift + o])), [shift]);
@@ -263,7 +267,7 @@ const cmp = { time: (a, b) => tk(a).localeCompare(tk(b)), priority: (a, b) => PR
 return [...tasks, ...backlog].filter((t) => !off[t.cat] && (!selArea || t.cat === selArea) && (!s || t.title.toLowerCase().includes(s) || t.id.toLowerCase().includes(s))).sort(cmp);
 }, [tasks, backlog, selArea, q, sortBy, off]);
 const preview = parse(cli, allItems);
- 
+
 const flash = (m) => { setToast(m); setTimeout(() => setToast(""), 2600); };
 const toMin = (s) => { const m = s && s.match(/^(\d{1,2}):(\d{2})$/); if (!m) return null; const h = +m[1], n = +m[2]; return h < 24 && n < 60 ? h * 60 + n : null; };
 const create = ({ code, title, notes = "", date, time, pri, extra = {} }) => {
@@ -287,6 +291,8 @@ while (used.has(t)) t += 30;
 setExtras((e) => [...e, { ...item, t, flex: true, date: selDate, pri: item.pri || "Medium" }]);
 setBacklog((b) => b.filter((x) => x.id !== item.id));
 };
+const nowD = new Date(), todayNow = isoOf(nowD);
+const vctx = (id, orig) => { const n = new Date(); return { today: isoOf(n), nowMin: n.getHours() * 60 + n.getMinutes(), items: allItems, id, orig }; };
 const cliBase = () => preview ? validate(preview.cat, { title: preview.title, date: preview.date || selDate, time: toMin(preview.time) }, vctx(null)) : cli.trim() ? validate("Personal", { title: cli.trim(), date: selDate }, vctx(null)) : {};
 const cliCheck = () => { const e = cliBase(); if (preview && preview.time && toMin(preview.time) == null) e.time = "Time must be a valid HH:MM (00:00 to 23:59)"; return e; };
 const cliErrs = cliCheck();
@@ -298,9 +304,10 @@ else if (cli.trim()) create({ code: "PT", title: cli.trim() });
 else return false;
 setCli(""); return true;
 };
-const vctx = (id, orig) => ({ today: TODAY_STR, nowMin: clock.getHours() * 60 + clock.getMinutes(), items: allItems, id, orig });
 const mData = { title: mTitle, notes: mNotes, date: mDate, time: mSched ? +mHH * 60 + +mMM : null, qty: mNum };
-const mErrs = mTried ? validate(CODES[mCode], mData, vctx(null)) : {};
+const mAll = validate(CODES[mCode], mData, vctx(null));
+const mErrs = mTried ? mAll : { date: mAll.date, time: mAll.time, ...(mTitle ? { title: mAll.title } : {}), ...(mNotes ? { notes: mAll.notes } : {}), ...(mNum ? { qty: mAll.qty } : {}) };
+const mBlocked = mTried ? Object.keys(mAll).length > 0 : !!(mAll.date || mAll.time);
 const edErrs = ed ? validate(ed.cat, { title: ed.title, notes: ed.notes, date: ed.date, time: ed.sched ? +ed.hh * 60 + +ed.mm : null }, vctx(ed.item.id, { date: ed.item.date, t: ed.item.t })) : {};
 const confirmManual = () => {
 setMTried(true);
@@ -343,7 +350,7 @@ create({ code: scan.res.code, title: scan.res.title, notes: scan.res.summary, ex
 setScan(null); setTab("agenda"); setDrawer(true);
 };
 const press = (k) => setMNum((v) => (k === "C" ? "" : k === "⌫" ? v.slice(0, -1) : (v + k).slice(0, 8)));
- 
+
 const ios = plat === "ios";
 const frame = !REAL;
 const glass = ios ? { background: "rgba(13,15,18,.72)", backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)" } : { background: "#181D24" };
@@ -353,7 +360,7 @@ const vars = { "--sb": frame ? (ios ? "54px" : "30px") : "env(safe-area-inset-to
 const rootStyle = frame ? { ...vars, width: 390, height: 784, background: C.bg, borderRadius: ios ? 48 : 30, border: (ios ? 8 : 6) + "px solid #1a1d22" } : { ...vars, position: "fixed", inset: 0, background: C.bg };
 const navs = [["agenda", "Agenda", CalendarClock], ["cli", "CLI Add", Terminal], ["health", "Health", HeartPulse], ["areas", "Areas", LayoutGrid]];
 const hh = String(clock.getHours()).padStart(2, "0") + ":" + String(clock.getMinutes()).padStart(2, "0");
- 
+
 const TaskRow = ({ t }) => (
 <button onClick={() => setDone((d) => ({ ...d, [t.id]: !d[t.id] }))} className="w-full flex gap-3 text-left">
 <span className="w-11 text-xs pt-3 tabular-nums" style={{ color: C.t2 }}>{fmt(t.t)}</span>
@@ -368,13 +375,14 @@ const TaskRow = ({ t }) => (
 </Card>
 </button>
 );
- 
+
 const dateBar = (
 <div className="flex items-center gap-1 pt-1 pb-2">
 <button onClick={() => setSelDate(addDays(selDate, -1))} aria-label="Previous day" className="w-6 h-12 shrink-0 rounded-lg flex items-center justify-center" style={{ background: C.card, color: C.t2 }}><ChevronLeft size={16} /></button>
 <div className="flex-1 min-w-0 flex gap-1">
 {[-3, -2, -1, 0, 1, 2, 3].map((o) => {
 const d = addDays(selDate, o), on = d === selDate, has = tasks.some((t) => t.date === d && !off[t.cat]);
+
 return (
 <button key={d} onClick={() => setSelDate(d)} className="flex-1 min-w-0 h-12 rounded-xl flex flex-col items-center justify-center" style={{ background: on ? C.blue : C.card, color: on ? "#fff" : C.t2 }}>
 <span className="text-[9px] uppercase leading-none">{DAYS[(new Date(d + "T00:00:00").getDay() + 6) % 7]}</span>
@@ -418,7 +426,7 @@ const Agenda = (
 )}
 </div>
 );
- 
+
 const Cli = (
 <div className="space-y-4">
 <textarea value={cli} onChange={(e) => setCli(e.target.value)} rows={4} placeholder="=PT Buy Groceries, 2026-09-24 10:00, High Priority" className="w-full rounded-xl p-3 text-sm font-mono outline-none border" style={{ background: "#050608", borderColor: C.line, color: C.em }} />
@@ -440,7 +448,7 @@ const Cli = (
 ) : <Empty>Start with a shortcode like =PT to see the parsed result.</Empty>}
 </div>
 );
- 
+
 const Health = (
 <div className="space-y-4">
 {todayDoses.length > 0 && !off.Health && (
@@ -477,7 +485,7 @@ const Health = (
 ))}
 </div>
 );
- 
+
 const areaRow = (t) => {
 const isD = !!done[t.id];
 const when = t.t != null ? (t.date !== TODAY_STR ? t.date + " " : "") + fmt(t.t) : "Unscheduled";
@@ -533,7 +541,7 @@ const Areas = (
 )}
 </div>
 );
- 
+
 return (
 <div className={plat + (REAL ? "" : " min-h-screen flex flex-col items-center justify-center gap-3 p-4")} style={{ background: "#050608", color: C.t1, fontFamily: FONTS[plat] }}>
 <style>{PCSS}</style>
@@ -543,10 +551,11 @@ return (
 {frame ? <StatusBar plat={plat} time={hh} /> : <div style={{ height: "var(--sb)" }} />}
 <header className="flex items-center gap-2 px-4" style={{ height: "var(--hh)" }}>
 <h1 style={{ fontSize: ios ? 22 : 20, fontWeight: ios ? 700 : 500, letterSpacing: ios ? "-0.02em" : 0 }}>ZenSchedule</h1>
+
 <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "#0084FF22", color: C.blue }}>ZenOx</span>
 <span className="ml-auto flex items-center gap-1 text-[10px] font-semibold" style={{ color: C.am }}><WifiOff size={12} />OFFLINE</span>
 <button onClick={() => setScan({ stage: "pick", mode: "auto" })} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.card, color: C.blue }} aria-label="Scan document"><Camera size={18} /></button>
-<button onClick={() => { setMDate(selDate); setMMode("form"); setMTried(false); setManual(true); }} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.blue }} aria-label="Quick add"><Plus size={18} color="#fff" /></button>
+<button onClick={() => { const n = new Date(); setMDate(isoOf(n)); setMHH(p2(n.getHours())); setMMM(p2(n.getMinutes())); setMSched(true); setMMode("form"); setMTried(false); setManual(true); }} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.blue }} aria-label="Quick add"><Plus size={18} color="#fff" /></button>
 </header>
 {(tab === "agenda" || tab === "health") && <div className="px-4">{dateBar}</div>}
 {tab === "agenda" && <div className="px-4">{agendaChips}</div>}
@@ -561,7 +570,7 @@ return (
 ); })}
 </nav>
 {frame && <span className="absolute left-1/2 -translate-x-1/2 rounded-full" style={{ zIndex: 26, bottom: ios ? 8 : 6, width: ios ? 134 : 108, height: ios ? 5 : 4, background: "#F3F5F7aa" }} />}
- 
+
 {cal && (() => {
 const lead = (new Date(cal.y, cal.m, 1).getDay() + 6) % 7;
 const n = new Date(cal.y, cal.m + 1, 0).getDate();
@@ -607,9 +616,9 @@ return (
 {ed && (
 <Sheet title={(ed.mode === "edit" ? "Edit " : "Reschedule ") + ed.item.id} onClose={() => setEd(null)}>
 {ed.mode === "edit" && <>
-<input value={ed.title} onChange={(e) => setEd({ ...ed, title: e.target.value })} placeholder="Title" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
+<input maxLength={LIM.title} value={ed.title} onChange={(e) => setEd({ ...ed, title: e.target.value })} placeholder="Title" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
 <Err m={edErrs.title} />
-<input value={ed.notes} onChange={(e) => setEd({ ...ed, notes: e.target.value })} placeholder="Notes" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
+<input maxLength={LIM.notes} value={ed.notes} onChange={(e) => setEd({ ...ed, notes: e.target.value })} placeholder="Notes" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
 <Err m={edErrs.notes} />
 <div className="flex flex-wrap gap-1.5">{CATS.map((c) => <Chip key={c} on={ed.cat === c} onClick={() => setEd({ ...ed, cat: c })}>{c}</Chip>)}</div>
 <div className="flex gap-2">{["Low", "Medium", "High"].map((p) => <button key={p} onClick={() => setEd({ ...ed, pri: p })} className="flex-1 rounded-xl py-2 text-xs font-semibold" style={{ background: ed.pri === p ? (p === "High" ? C.red : p === "Medium" ? C.am : C.em) : C.card, color: ed.pri === p ? "#fff" : C.t2 }}>{p}</button>)}</div>
@@ -679,21 +688,21 @@ return (
 {mMode === "form" && <>
 <div className="grid grid-cols-5 gap-1.5">{Object.keys(CODES).map((k) => <button key={k} onClick={() => setMCode(k)} className="rounded-lg py-2 text-xs font-mono font-semibold" style={{ background: mCode === k ? C.blue : C.card }}>{k}</button>)}</div>
 <p className="text-xs" style={{ color: C.t2 }}>{CODE_NAMES[mCode]} · {CODES[mCode]}</p>
-<input value={mTitle} onChange={(e) => setMTitle(e.target.value)} placeholder="Task title" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
-<Err m={mErrs.title} />
-<input value={mNotes} onChange={(e) => setMNotes(e.target.value)} placeholder="Notes (optional)" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
-<Err m={mErrs.notes} />
+<input maxLength={LIM.title} value={mTitle} onChange={(e) => setMTitle(e.target.value)} placeholder="Task title (max 30)" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
+<div className="flex justify-between gap-2"><Err m={mErrs.title} /><span className="text-[11px] ml-auto shrink-0" style={{ color: mTitle.length >= LIM.title ? C.am : C.t3 }}>{mTitle.length}/{LIM.title}</span></div>
+<input maxLength={LIM.notes} value={mNotes} onChange={(e) => setMNotes(e.target.value)} placeholder="Notes (optional, max 90)" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
+<div className="flex justify-between gap-2"><Err m={mErrs.notes} /><span className="text-[11px] ml-auto shrink-0" style={{ color: mNotes.length >= LIM.notes ? C.am : C.t3 }}>{mNotes.length}/{LIM.notes}</span></div>
 <div className="flex gap-2">
 <Chip on={mSched} onClick={() => setMSched(true)}>Schedule</Chip>
 <Chip on={!mSched} onClick={() => setMSched(false)}>Backlog</Chip>
 <Chip on={mKeys} onClick={() => setMKeys(!mKeys)}>Quantity</Chip>
 </div>
 <div className="flex gap-2 items-center">
-<input type="date" value={mDate} onChange={(e) => setMDate(e.target.value || TODAY_STR)} className="flex-1 min-w-0 rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1, colorScheme: "dark" }} />
+<input type="date" min={todayNow} value={mDate} onChange={(e) => setMDate(e.target.value || todayNow)} className="flex-1 min-w-0 rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1, colorScheme: "dark" }} />
 {mSched && <>
-<select value={mHH} onChange={(e) => setMHH(e.target.value)} className="rounded-xl px-2 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }}>{Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0")).map((v) => <option key={v}>{v}</option>)}</select>
+<select value={mHH} onChange={(e) => setMHH(e.target.value)} className="rounded-xl px-2 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }}>{Array.from({ length: 24 }, (_, i) => p2(i)).map((v) => <option key={v} disabled={mDate === todayNow && +v < nowD.getHours()}>{v}</option>)}</select>
 <span style={{ color: C.t2 }}>:</span>
-<select value={mMM} onChange={(e) => setMMM(e.target.value)} className="rounded-xl px-2 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }}>{Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, "0")).map((v) => <option key={v}>{v}</option>)}</select>
+<select value={mMM} onChange={(e) => setMMM(e.target.value)} className="rounded-xl px-2 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }}>{Array.from({ length: 60 }, (_, i) => p2(i)).map((v) => <option key={v} disabled={mDate === todayNow && +mHH === nowD.getHours() && +v < nowD.getMinutes()}>{v}</option>)}</select>
 </>}
 </div>
 <Err m={mErrs.date} /><Err m={mErrs.time} />
@@ -703,7 +712,7 @@ return (
 <Err m={mErrs.qty} />
 <div className="grid grid-cols-3 gap-2">{["1", "2", "3", "4", "5", "6", "7", "8", "9", "C", "0", "⌫"].map((k) => <button key={k} onClick={() => press(k)} className="rounded-xl py-3 text-base font-semibold flex items-center justify-center" style={{ background: C.card, color: k === "C" ? C.red : C.t1 }}>{k === "⌫" ? <Delete size={18} /> : k}</button>)}</div>
 </>}
-<button onClick={confirmManual} className="w-full rounded-xl py-3 text-sm font-semibold disabled:opacity-40" style={{ background: C.blue }}>{mSched ? "Schedule at " + mHH + ":" + mMM : "Save to backlog"}</button>
+<button disabled={mBlocked} onClick={confirmManual} className="w-full rounded-xl py-3 text-sm font-semibold disabled:opacity-40" style={{ background: C.blue }}>{mSched ? "Schedule at " + mHH + ":" + mMM : "Save to backlog"}</button>
 </>}
 </Sheet>
 )}
@@ -712,9 +721,8 @@ return (
 </div>
 );
 }
- 
+
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 </script>
 </body>
 </html>
- 

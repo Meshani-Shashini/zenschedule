@@ -13,13 +13,18 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.4/babel.min.js"></script>
-<style>body{margin:0;background:#050608;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}button{font-family:inherit;color:inherit}::-webkit-scrollbar{width:0;height:0}</style>
+<style>body{margin:0;background:var(--deep);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}button{font-family:inherit;color:inherit}::-webkit-scrollbar{width:0;height:0}
+:root,:root[data-theme=dark]{--bg:#0D0F12;--card:#181D24;--line:#22272E;--blue:#0084FF;--em:#10B981;--am:#F59E0B;--red:#EF4444;--t1:#F3F5F7;--t2:#8A93A3;--t3:#5C6472;--deep:#050608;--glass:rgba(13,15,18,.72);--hair:rgba(255,255,255,.1);--frame:#1a1d22}
+:root[data-theme=light]{--bg:#F4F6F9;--card:#FFFFFF;--line:#D3DAE5;--blue:#0072E0;--em:#047857;--am:#B45309;--red:#DC2626;--t1:#111827;--t2:#4B5563;--t3:#6B7280;--deep:#E4E8EF;--glass:rgba(244,246,249,.82);--hair:rgba(0,0,0,.12);--frame:#C5CBD6}
+[data-theme=light] .zs-card{border:1px solid var(--line);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+</style>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem("zs_theme")||"dark"}catch(e){}</script>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useMemo, useEffect } = React;
-const mk = (d) => ({ size = 24, color = "currentColor" }) => React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", dangerouslySetInnerHTML: { __html: d } });
+const mk = (d) => ({ size = 24, color = "currentColor" }) => React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", style: { stroke: color }, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", dangerouslySetInnerHTML: { __html: d } });
 const CalendarClock = mk('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="16" r="3"/><path d="M12 15v1.5l1 .5"/>');
 const Terminal = mk('<path d="m4 17 6-6-6-6M12 19h8"/>');
 const HeartPulse = mk('<path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/><path d="M3.2 12h4.4l1.4-2 2 4 1.4-2h5.4"/>');
@@ -41,9 +46,13 @@ const Eye = mk('<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><cir
 const ChevronLeft = mk('<path d="m15 18-6-6 6-6"/>');
 const ChevronRight = mk('<path d="m9 18 6-6-6-6"/>');
 const CalendarDays = mk('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>');
+const Sun = mk('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>');
+const Moon = mk('<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/>');
+const Bell = mk('<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/>');
+const Download = mk('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>');
 const List = mk('<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>');
 
-const C = { bg: "#0D0F12", card: "#181D24", line: "#22272E", blue: "#0084FF", em: "#10B981", am: "#F59E0B", red: "#EF4444", t1: "#F3F5F7", t2: "#8A93A3", t3: "#5C6472" };
+const C = { bg: "var(--bg)", card: "var(--card)", line: "var(--line)", blue: "var(--blue)", em: "var(--em)", am: "var(--am)", red: "var(--red)", t1: "var(--t1)", t2: "var(--t2)", t3: "var(--t3)", deep: "var(--deep)" };
 const CATS = ["Personal", "Official", "Health", "Fitness", "Home", "Finance", "Maintenance", "Entertainment"];
 const CODES = { PT: "Personal", PS: "Personal", OT: "Official", OM: "Official", HC: "Health", FN: "Fitness", HM: "Home", FI: "Finance", MT: "Maintenance", EN: "Entertainment" };
 const CODE_NAMES = { PT: "Personal task", PS: "Personal shopping", OT: "Official task", OM: "Official meeting", HC: "Health care", FN: "Fitness", HM: "Home", FI: "Finance", MT: "Maintenance", EN: "Entertainment" };
@@ -55,6 +64,8 @@ const MEALS = [["Breakfast", 0], ["Lunch", 300], ["Dinner", 660], ["Bedtime", 90
 const fmt = (m) => { m = ((m % 1440) + 1440) % 1440; return String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0"); };
 const all7 = [1, 1, 1, 1, 1, 1, 1];
 
+const LS_KEY = "zs_data_v1";
+const SAVED = (() => { try { return JSON.parse(localStorage.getItem(LS_KEY)) || {}; } catch (e) { return {}; } })();
 const MEDS = [
 { id: "m1", name: "Metformin", dose: "500 mg", meal: "Breakfast", off: 0, day: 28, total: 30, refill: true, fasting: false },
 { id: "m2", name: "Lisinopril", dose: "10 mg", meal: "Breakfast", off: -30, day: 12, total: 30, refill: false, fasting: false },
@@ -142,6 +153,9 @@ const PCSS = `
 .android .zs-card{border-radius:12px;box-shadow:0 1px 2px rgba(0,0,0,.6),0 2px 6px 2px rgba(0,0,0,.3)}
 .android .zs-chip{border-radius:8px}
 .android .rounded-xl{border-radius:10px}
+@keyframes zsShrink{from{width:100%}to{width:0}}
+@keyframes zsRing{0%,100%{transform:rotate(0)}20%{transform:rotate(-18deg)}40%{transform:rotate(18deg)}60%{transform:rotate(-10deg)}}
+.zs-ring{display:inline-flex;animation:zsRing 1s infinite}
 .android button{position:relative;overflow:hidden}
 .android button::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,.3) 10%,transparent 10.01%) no-repeat 50%;transform:scale(10);opacity:0;transition:transform .5s,opacity 1s}
 .android button:active::after{transform:scale(0);opacity:1;transition:0s}
@@ -205,17 +219,17 @@ const Sheet = ({ title, onClose, children }) => (
 function App() {
 const [tab, setTab] = useState("agenda");
 const [plat, setPlat] = useState(REAL || "ios");
-const [shift, setShift] = useState(0);
-const [done, setDone] = useState({});
-const [freq, setFreq] = useState(() => Object.fromEntries(MEDS.map((m) => [m.id, m.id === "m4" ? [1, 1, 1, 1, 1, 0, 0] : all7])));
-const [backlog, setBacklog] = useState(BACKLOG0);
-const [extras, setExtras] = useState(TASKS0);
+const [shift, setShift] = useState(SAVED.shift || 0);
+const [done, setDone] = useState(() => SAVED.done || ({ HC001: addDays(TODAY_STR, -1) }));
+const [freq, setFreq] = useState(() => SAVED.freq || Object.fromEntries(MEDS.map((m) => [m.id, m.id === "m4" ? [1, 1, 1, 1, 1, 0, 0] : all7])));
+const [backlog, setBacklog] = useState(() => SAVED.backlog || BACKLOG0);
+const [extras, setExtras] = useState(() => SAVED.extras || [...TASKS0, { id: "HC001", cat: "Health", title: "Blood pressure check", notes: "Logged 128/82", t: 540, flex: false, date: addDays(TODAY_STR, -1), pri: "Medium" }]);
 const [cli, setCli] = useState("");
 const [aCat, setACat] = useState(null);
 const [area, setArea] = useState(null);
 const [drawer, setDrawer] = useState(true);
 const [consult, setConsult] = useState(null);
-const [consultState, setConsultState] = useState({});
+const [consultState, setConsultState] = useState(SAVED.consultState || {});
 const [cForm, setCForm] = useState({ follow: null, note: "" });
 const [manual, setManual] = useState(false);
 const [mCode, setMCode] = useState("PT");
@@ -233,15 +247,20 @@ const [scan, setScan] = useState(null);
 const [openB, setOpenB] = useState(null);
 const [q, setQ] = useState("");
 const [sortBy, setSortBy] = useState("time");
-const [compact, setCompact] = useState(false);
+const [compact, setCompact] = useState(!!SAVED.compact);
 const [ed, setEd] = useState(null);
-const [off, setOff] = useState({});
+const [off, setOff] = useState(SAVED.off || {});
 const [secs, setSecs] = useState(false);
 const [selDate, setSelDate] = useState(TODAY_STR);
 const [cal, setCal] = useState(null);
 const [mMode, setMMode] = useState("form");
 const [mTried, setMTried] = useState(false);
 const [clock, setClock] = useState(new Date());
+const [theme, setTheme] = useState(() => { try { return localStorage.getItem("zs_theme") || "dark"; } catch (e) { return "dark"; } });
+const [undo, setUndo] = useState(null), [snz, setSnz] = useState(SAVED.snz || {}), [dis, setDis] = useState(SAVED.dis || {}), [exp, setExp] = useState(false), [taken, setTaken] = useState(SAVED.taken || {});
+useEffect(() => { document.documentElement.dataset.theme = theme; try { localStorage.setItem("zs_theme", theme); } catch (e) {} const m = document.querySelector("meta[name=theme-color]"); if (m) m.content = theme === "dark" ? "#0D0F12" : "#F4F6F9"; }, [theme]);
+useEffect(() => { try { localStorage.setItem(LS_KEY, JSON.stringify({ extras, backlog, done, taken, freq, shift, consultState, off, compact, snz, dis })); } catch (e) { console.warn("ZenSchedule: could not save", e); } }, [extras, backlog, done, taken, freq, shift, consultState, off, compact, snz, dis]);
+useEffect(() => { if (!undo) return; const i = setTimeout(() => setUndo(null), 5000); return () => clearTimeout(i); }, [undo]);
 useEffect(() => { const i = setInterval(() => setClock(new Date()), 5000); return () => clearInterval(i); }, []);
 
 const tasks = useMemo(() => [...extras].sort((a, b) => a.t - b.t), [extras]);
@@ -292,6 +311,47 @@ setExtras((e) => [...e, { ...item, t, flex: true, date: selDate, pri: item.pri |
 setBacklog((b) => b.filter((x) => x.id !== item.id));
 };
 const nowD = new Date(), todayNow = isoOf(nowD);
+const isLocked = (id) => !!done[id] && done[id] !== todayNow;
+const toggleDone = (t) => {
+if (done[t.id]) { if (isLocked(t.id)) { flash("Locked: completed on " + done[t.id] + ". Past records can't be changed."); return; } setDone((d) => { const n = { ...d }; delete n[t.id]; return n; }); setUndo(null); return; }
+setDone((d) => ({ ...d, [t.id]: todayNow })); setUndo({ id: t.id, title: t.title, k: Date.now() });
+};
+const undoDone = () => { setDone((d) => { const n = { ...d }; delete n[undo.id]; return n; }); setUndo(null); };
+const nowMin = clock.getHours() * 60 + clock.getMinutes();
+const isTS = (t) => t.cat === "Health" || /med|pill|vitamin|breakfast|lunch|dinner|meal/i.test(t.title);
+const dueNow = (t) => t.date === todayNow && !done[t.id] && nowMin >= t.t - 15 && nowMin <= t.t + 60;
+const clash = {}; todayTasks.forEach((t) => { clash[t.t] = (clash[t.t] || 0) + 1; });
+const dTot = todayTasks.length, dDone = todayTasks.filter((t) => done[t.id]).length, dPct = dTot ? Math.round((dDone / dTot) * 100) : 0;
+const BADGES = (t) => <>{isLocked(t.id) && <span className="text-[10px] ml-1.5" style={{ color: C.t3 }}>🔒 Locked</span>}{clash[t.t] > 1 && <span className="text-[10px] font-semibold ml-1.5" style={{ color: C.am }}>⚠ Time conflict</span>}{isTS(t) && <span className={"ml-1.5 inline-block align-middle" + (dueNow(t) ? " zs-ring" : "")}><Bell size={11} color={dueNow(t) ? C.red : C.am} /></span>}</>;
+const wd = (clock.getDay() + 6) % 7;
+const alarm = [...tasks.filter((t) => t.date === todayNow && !done[t.id] && !off[t.cat]).map((t) => ({ key: t.id + todayNow, title: t.title, at: t.t, lead: 15, kind: isTS(t) ? "Reminder" : "Task" })), ...(off.Health ? [] : doses.filter((m) => freq[m.id][wd] && !taken[m.id + "|" + todayNow]).map((m) => ({ key: m.id + todayNow, title: m.name + " " + m.dose, at: m.at, lead: 30, kind: "Medication" })))].find((a) => nowMin >= a.at - a.lead && nowMin <= a.at + 60 && !(snz[a.key] > nowMin) && !dis[a.key]);
+const buildRows = () => ({ sched: [["ID", "Category", "Title", "Notes", "Date", "Time", "Priority", "Status", "Completed on"], ...[...tasks, ...backlog].map((t) => [t.id, t.cat, t.title, t.notes || "", t.date || "", t.t != null ? fmt(t.t) : "", t.pri || "", done[t.id] ? "Completed" : "Pending", done[t.id] || ""])], med: [["Medication", "Dose", "Meal", "Time", "Days", "Supply", "Fasting lab", "Doses taken (dates)", "Consult follow-up", "Consult note"], ...doses.map((m) => [m.name, m.dose, m.meal, fmt(m.at), DAYS.filter((d, i) => freq[m.id][i]).join("/"), m.day + "/" + m.total + " days", m.fasting ? "Yes" : "No", Object.keys(taken).filter((k) => k.startsWith(m.id + "|")).map((k) => k.split("|")[1]).join(" "), consultState[m.id] ? (consultState[m.id].follow ? "Yes" : "No") : "", (consultState[m.id] && consultState[m.id].note) || ""])] });
+const exportCsv = () => { const { sched, med } = buildRows(); const q = (v) => '"' + String(v ?? "").replace(/"/g, '""') + '"'; const txt = ["SCHEDULE", ...sched.map((r) => r.map(q).join(",")), "", "MEDICAL LOG", ...med.map((r) => r.map(q).join(","))].join("\n"); const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["\uFEFF" + txt], { type: "text/csv" })); a.download = "zenschedule-" + todayNow + ".csv"; document.body.appendChild(a); a.click(); a.remove(); flash("CSV exported"); setExp(false); };
+const exportPdf = () => { try {
+const { sched, med } = buildRows(); const W = 842, H = 595, M = 36, FS = 8, LH = 10, PD = 3;
+const lat = (v) => String(v ?? "").replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"').replace(/[\u2013\u2014]/g, "-").replace(/[^\x20-\x7E\xA0-\xFF]/g, "?");
+const esc = (v) => lat(v).replace(/[\\()]/g, "\\$&");
+const pages = []; let cur, y; const newPage = () => { cur = []; pages.push(cur); y = H - M; };
+const wrap = (t, w) => { const mx = Math.max(1, Math.floor((w - 2 * PD) / (FS * 0.54))), out = []; let l = ""; for (const word of lat(t).split(/\s+/)) { let wd = word; while (wd.length > mx) { if (l) { out.push(l); l = ""; } out.push(wd.slice(0, mx)); wd = wd.slice(mx); } if (!wd) continue; if ((l ? l + " " + wd : wd).length > mx) { out.push(l); l = wd; } else l = l ? l + " " + wd : wd; } out.push(l); return out; };
+const text = (t, x, yy, f, sz) => cur.push("BT /" + f + " " + sz + " Tf " + x + " " + yy + " Td (" + esc(t) + ") Tj ET");
+const head = (t, sz) => { if (y - sz - 20 < M) newPage(); y -= sz + 4; text(t, M, y, "F2", sz); y -= 6; };
+const draw = (r, ws, hd, hr) => { const cells = r.map((c, i) => wrap(c, ws[i])), h = Math.max(...cells.map((c) => c.length)) * LH + 2 * PD; if (y - h < M) { newPage(); if (!hd) draw(hr, ws, true, hr); } let x = M; if (hd) cur.push("0.9 g " + M + " " + (y - h) + " " + ws.reduce((a, b) => a + b, 0) + " " + h + " re f 0 g"); ws.forEach((w, i) => { cur.push("0.6 G " + x + " " + (y - h) + " " + w + " " + h + " re S 0 G"); cells[i].forEach((ln, k) => text(ln, x + PD, y - PD - FS - k * LH + 2, hd ? "F2" : "F1", FS)); x += w; }); y -= h; };
+const table = (rows, ws) => rows.forEach((r, k) => draw(r, ws, k === 0, rows[0]));
+newPage(); head("ZenSchedule", 18);
+const nDone = sched.slice(1).filter((r) => r[7] === "Completed").length;
+text("Exported " + todayNow + " " + fmt(nowMin) + "   |   " + (sched.length - 1) + " tasks, " + nDone + " completed, " + (sched.length - 1 - nDone) + " pending", M, y, "F1", 9); y -= 6;
+head("Schedule and completion status", 12); table(sched, [40, 70, 180, 200, 62, 36, 48, 52, 62]);
+y -= 10; head("Medical log", 12); table(med, [80, 50, 60, 36, 90, 60, 50, 150, 60, 134]);
+pages.forEach((c, i) => { cur = c; text("Page " + (i + 1) + " of " + pages.length, W - M - 50, 18, "F1", 8); });
+let out = "%PDF-1.4\n"; const offs = [], add = (n, b) => { offs[n] = out.length; out += n + " 0 obj\n" + b + "\nendobj\n"; }, np = pages.length;
+add(1, "<< /Type /Catalog /Pages 2 0 R >>"); add(2, "<< /Type /Pages /Kids [" + pages.map((_, i) => 5 + 2 * i + " 0 R").join(" ") + "] /Count " + np + " >>");
+add(3, "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>"); add(4, "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>");
+pages.forEach((c, i) => { const st = c.join("\n"); add(5 + 2 * i, "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + W + " " + H + "] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents " + (6 + 2 * i) + " 0 R >>"); add(6 + 2 * i, "<< /Length " + st.length + " >>\nstream\n" + st + "\nendstream"); });
+const xr = out.length, tot = 5 + 2 * np; out += "xref\n0 " + tot + "\n0000000000 65535 f \n" + offs.slice(1, tot).map((o) => String(o).padStart(10, "0") + " 00000 n \n").join("") + "trailer\n<< /Size " + tot + " /Root 1 0 R >>\nstartxref\n" + xr + "\n%%EOF";
+const bytes = new Uint8Array(out.length); for (let k = 0; k < out.length; k++) bytes[k] = out.charCodeAt(k) & 255;
+const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" })); a.download = "zenschedule-" + todayNow + ".pdf"; document.body.appendChild(a); a.click(); a.remove(); flash("PDF exported"); setExp(false);
+} catch (e) { console.error(e); flash("PDF export failed. Try Export CSV."); } };
+const QUICK = [["Take Vitamins", "HC"], ["Lunch", "PT"], ["Pay Bill", "FI"], ["Call Doctor", "HC"], ["Water Plants", "HM"], ["Workout", "FN"]];
 const vctx = (id, orig) => { const n = new Date(); return { today: isoOf(n), nowMin: n.getHours() * 60 + n.getMinutes(), items: allItems, id, orig }; };
 const cliBase = () => preview ? validate(preview.cat, { title: preview.title, date: preview.date || selDate, time: toMin(preview.time) }, vctx(null)) : cli.trim() ? validate("Personal", { title: cli.trim(), date: selDate }, vctx(null)) : {};
 const cliCheck = () => { const e = cliBase(); if (preview && preview.time && toMin(preview.time) == null) e.time = "Time must be a valid HH:MM (00:00 to 23:59)"; return e; };
@@ -315,11 +375,12 @@ if (Object.keys(validate(CODES[mCode], mData, vctx(null))).length) return;
 create({ code: mCode, title: mTitle.trim(), notes: [mNotes.trim(), mNum && "Qty " + mNum].filter(Boolean).join(" · "), date: mDate, time: mSched ? +mHH * 60 + +mMM : null, pri: mPri });
 setManual(false); setMTitle(""); setMNotes(""); setMNum(""); setMCode("PT"); setMPri("Medium"); setMSched(true); setMKeys(false); setMDate(TODAY_STR); setMTried(false);
 };
-const openEd = (item, mode) => setEd({ item, mode, title: item.title, notes: item.notes || "", cat: item.cat, pri: item.pri || "Medium", date: item.date || TODAY_STR, hh: item.t != null ? fmt(item.t).slice(0, 2) : "09", mm: item.t != null ? String(Math.floor(+fmt(item.t).slice(3) / 5) * 5).padStart(2, "0") : "00", sched: item.t != null || mode === "resched" });
+const openEd = (item, mode) => isLocked(item.id) ? flash("Locked: completed on " + done[item.id] + ". Past records can't be changed.") : setEd({ item, mode, title: item.title, notes: item.notes || "", cat: item.cat, pri: item.pri || "Medium", date: item.date || TODAY_STR, hh: item.t != null ? fmt(item.t).slice(0, 2) : "09", mm: item.t != null ? String(Math.floor(+fmt(item.t).slice(3) / 5) * 5).padStart(2, "0") : "00", sched: item.t != null || mode === "resched" });
 const saveEdit = () => {
 const { item, title, notes, cat, pri, date, hh, mm, sched } = ed;
 const errs = Object.values(edErrs);
 if (errs.length) { flash(errs[0]); return; }
+if (sched && done[item.id]) setDone((d) => { const x = { ...d }; delete x[item.id]; return x; });
 const n = { ...item, title: title.trim(), notes, cat, pri, date };
 const isTask = item.t != null;
 if (sched) {
@@ -353,21 +414,21 @@ const press = (k) => setMNum((v) => (k === "C" ? "" : k === "⌫" ? v.slice(0, -
 
 const ios = plat === "ios";
 const frame = !REAL;
-const glass = ios ? { background: "rgba(13,15,18,.72)", backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)" } : { background: "#181D24" };
-const topBar = { background: C.bg, zIndex: 25, borderBottom: ios ? "0.5px solid rgba(255,255,255,.1)" : "none", boxShadow: ios ? "none" : "0 2px 6px rgba(0,0,0,.55)" };
-const navBar = { ...glass, zIndex: 25, height: "calc(var(--nh) + var(--sab))", borderTop: ios ? "0.5px solid rgba(255,255,255,.1)" : "none", boxShadow: ios ? "none" : "0 -2px 8px rgba(0,0,0,.5)" };
+const glass = ios ? { background: "var(--glass)", backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)" } : { background: C.card };
+const topBar = { background: C.bg, zIndex: 25, borderBottom: ios ? "0.5px solid var(--hair)" : "none", boxShadow: ios ? "none" : "0 2px 6px rgba(0,0,0,.55)" };
+const navBar = { ...glass, zIndex: 25, height: "calc(var(--nh) + var(--sab))", borderTop: ios ? "0.5px solid var(--hair)" : "none", boxShadow: ios ? "none" : "0 -2px 8px rgba(0,0,0,.5)" };
 const vars = { "--sb": frame ? (ios ? "54px" : "30px") : "env(safe-area-inset-top, 0px)", "--hh": ios ? "48px" : "56px", "--nh": ios ? "50px" : "64px", "--sab": frame ? (ios ? "24px" : "14px") : "env(safe-area-inset-bottom, 0px)", "--top": "calc(var(--sb) + var(--hh))" };
-const rootStyle = frame ? { ...vars, width: 390, height: 784, background: C.bg, borderRadius: ios ? 48 : 30, border: (ios ? 8 : 6) + "px solid #1a1d22" } : { ...vars, position: "fixed", inset: 0, background: C.bg };
+const rootStyle = frame ? { ...vars, width: 390, height: 784, background: C.bg, borderRadius: ios ? 48 : 30, border: (ios ? 8 : 6) + "px solid var(--frame)" } : { ...vars, position: "fixed", inset: 0, background: C.bg };
 const navs = [["agenda", "Agenda", CalendarClock], ["cli", "CLI Add", Terminal], ["health", "Health", HeartPulse], ["areas", "Areas", LayoutGrid]];
 const hh = String(clock.getHours()).padStart(2, "0") + ":" + String(clock.getMinutes()).padStart(2, "0");
 
 const TaskRow = ({ t }) => (
-<button onClick={() => setDone((d) => ({ ...d, [t.id]: !d[t.id] }))} className="w-full flex gap-3 text-left">
+<button onClick={() => toggleDone(t)} className="w-full flex gap-3 text-left">
 <span className="w-11 text-xs pt-3 tabular-nums" style={{ color: C.t2 }}>{fmt(t.t)}</span>
 <span className="self-stretch" style={{ borderLeft: `3px ${t.flex ? "dashed" : "solid"} ${done[t.id] ? C.em : C.blue}` }} />
 <Card className="flex-1 flex items-center gap-3">
 <div className="flex-1 min-w-0">
-<span className="text-[10px] font-semibold" style={{ color: C.blue }}>{t.id}</span>{t.pri === "High" && <span className="text-[10px] font-semibold ml-1.5" style={{ color: C.red }}>High</span>}
+<span className="text-[10px] font-semibold" style={{ color: C.blue }}>{t.id}</span>{BADGES(t)}{t.pri === "High" && <span className="text-[10px] font-semibold ml-1.5" style={{ color: C.red }}>High</span>}
 <p className="text-sm" style={{ color: done[t.id] ? C.t3 : C.t1, textDecoration: done[t.id] ? "line-through" : "none" }}>{t.title}</p>
 {t.notes && <p className="text-xs" style={{ color: C.t3 }}>{t.notes}</p>}
 </div>
@@ -407,6 +468,7 @@ const agendaChips = (
 );
 const Agenda = (
 <div className="space-y-4">
+<Card className="space-y-1.5"><div className="flex justify-between text-xs"><span className="font-semibold">{dDone}/{dTot} Completed • {dPct}%</span><span style={{ color: C.t2 }}>{selDate === todayNow ? "Today" : selDate}</span></div><Bar pct={dPct} color={dPct === 100 ? C.em : C.blue} /></Card>
 {shown.length > 0 ? agendaDates.map((d) => (
 <div key={d}>
 <h3 className="text-sm font-semibold mb-2">{d === TODAY_STR ? "Today" : d === addDays(TODAY_STR, 1) ? "Tomorrow" : new Date(d + "T00:00:00").toLocaleDateString("en-GB", { weekday: "long" })} <span className="font-normal text-xs" style={{ color: C.t2 }}>· {d}</span></h3>
@@ -429,7 +491,7 @@ const Agenda = (
 
 const Cli = (
 <div className="space-y-4">
-<textarea value={cli} onChange={(e) => setCli(e.target.value)} rows={4} placeholder="=PT Buy Groceries, 2026-09-24 10:00, High Priority" className="w-full rounded-xl p-3 text-sm font-mono outline-none border" style={{ background: "#050608", borderColor: C.line, color: C.em }} />
+<textarea value={cli} onChange={(e) => setCli(e.target.value)} rows={4} placeholder="=PT Buy Groceries, 2026-09-24 10:00, High Priority" className="w-full rounded-xl p-3 text-sm font-mono outline-none border" style={{ background: C.deep, borderColor: C.line, color: C.em }} />
 <div className="grid grid-cols-3 gap-2">
 {Object.keys(CODES).map((k) => <button key={k} onClick={() => setCli(`=${k} `)} className="rounded-xl py-2 text-left px-3" style={{ background: C.card }}><span className="text-sm font-mono font-semibold" style={{ color: C.blue }}>={k}</span><span className="block text-[10px]" style={{ color: C.t2 }}>{CODE_NAMES[k]}</span></button>)}
 </div>
@@ -468,7 +530,7 @@ const Health = (
 {!off.Health && doses.map((m) => (
 <Card key={m.id} className="space-y-3">
 <div className="flex justify-between items-start">
-<div><p className="text-sm font-semibold">{m.name} <span style={{ color: C.t2 }}>{m.dose}</span></p><p className="text-xs" style={{ color: C.t2 }}>{m.meal} · alert {fmt(m.at - 30)}</p></div>
+<div><p className="text-sm font-semibold">{m.name} <span style={{ color: C.t2 }}>{m.dose}</span></p><p className="text-xs inline-flex items-center gap-1" style={{ color: C.t2 }}><Bell size={11} color={C.am} />{m.meal} · alert {fmt(m.at - 30)}</p></div>
 <span className="text-lg font-semibold tabular-nums" style={{ color: C.blue }}>{fmt(m.at)}</span>
 </div>
 <div className="flex gap-1">
@@ -480,6 +542,7 @@ const Health = (
 {m.refill && <span className="text-[11px] px-2 py-1 rounded-full" style={{ background: "#EF444422", color: C.red }}>Low stock</span>}
 {consultState[m.id] && <span className="text-[11px] px-2 py-1 rounded-full" style={{ background: "#10B98122", color: C.em }}>Consult saved{consultState[m.id].follow ? " · follow-up" : ""}</span>}
 </div>
+{selDate === todayNow && <button onClick={() => setTaken((x) => { const n = { ...x }, k = m.id + "|" + todayNow; if (n[k]) delete n[k]; else n[k] = 1; return n; })} className="w-full rounded-xl py-2 text-sm font-semibold" style={{ background: taken[m.id + "|" + todayNow] ? C.em : C.line, color: taken[m.id + "|" + todayNow] ? "#fff" : C.t1 }}>{taken[m.id + "|" + todayNow] ? "Taken today ✓ (tap to undo)" : "Mark as taken"}</button>}
 {m.total - m.day <= 3 && <button onClick={() => { setConsult(m); setCForm({ follow: null, note: "" }); }} className="w-full rounded-xl py-2.5 text-sm font-semibold border" style={{ borderColor: C.am, color: C.am }}>Simulate 30-day prescription end</button>}
 </Card>
 ))}
@@ -489,15 +552,16 @@ const Health = (
 const areaRow = (t) => {
 const isD = !!done[t.id];
 const when = t.t != null ? (t.date !== TODAY_STR ? t.date + " " : "") + fmt(t.t) : "Unscheduled";
-const tick = <button onClick={() => setDone((d) => ({ ...d, [t.id]: !d[t.id] }))} aria-label="Toggle complete" className="w-6 h-6 shrink-0 rounded-full border flex items-center justify-center" style={{ borderColor: isD ? C.em : C.line, background: isD ? C.em : "transparent" }}>{isD && <Check size={14} color="#fff" />}</button>;
-const acts = <div className="flex gap-1 shrink-0"><button onClick={() => openEd(t, "edit")} aria-label="Edit" className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: C.line, color: C.t2 }}><Pencil size={13} /></button><button onClick={() => openEd(t, "resched")} aria-label="Reschedule" className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: C.line, color: C.blue }}><CalendarClock size={13} /></button></div>;
+const tick = <button onClick={() => toggleDone(t)} aria-label="Toggle complete" className="w-6 h-6 shrink-0 rounded-full border flex items-center justify-center" style={{ borderColor: isD ? C.em : C.line, background: isD ? C.em : "transparent" }}>{isD && <Check size={14} color="#fff" />}</button>;
+const acts = <div className="flex gap-1 shrink-0" style={{ opacity: isLocked(t.id) ? 0.35 : 1 }}><button onClick={() => openEd(t, "edit")} aria-label="Edit" className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: C.line, color: C.t2 }}><Pencil size={13} /></button><button onClick={() => openEd(t, "resched")} aria-label="Reschedule" className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: C.line, color: C.blue }}><CalendarClock size={13} /></button></div>;
 const tag = <span className="text-[10px] font-semibold" style={{ color: t.id.startsWith("BK") ? C.am : C.blue }}>{t.id}</span>;
+const lk = isLocked(t.id) ? <span className="text-[10px] ml-1.5" style={{ color: C.t3 }}>🔒 Locked</span> : null;
 const pr = t.pri === "High" ? <span className="text-[10px] font-semibold ml-1.5" style={{ color: C.red }}>High</span> : t.pri === "Low" ? <span className="text-[10px] ml-1.5" style={{ color: C.t3 }}>Low</span> : null;
 const tx = { color: isD ? C.t3 : C.t1, textDecoration: isD ? "line-through" : "none" };
 return compact ? (
-<div key={t.id} className="flex items-center gap-2 rounded-xl px-2.5 py-2" style={{ background: C.card }}>{tick}<div className="flex-1 min-w-0 flex items-center gap-1.5">{tag}<span className="text-sm truncate" style={tx}>{t.title}</span></div><span className="text-[11px] tabular-nums shrink-0" style={{ color: C.t2 }}>{t.t != null ? fmt(t.t) : "—"}</span>{acts}</div>
+<div key={t.id} className="flex items-center gap-2 rounded-xl px-2.5 py-2" style={{ background: C.card }}>{tick}<div className="flex-1 min-w-0 flex items-center gap-1.5">{tag}{lk}<span className="text-sm truncate" style={tx}>{t.title}</span></div><span className="text-[11px] tabular-nums shrink-0" style={{ color: C.t2 }}>{t.t != null ? fmt(t.t) : "—"}</span>{acts}</div>
 ) : (
-<Card key={t.id} className="flex gap-3 items-start"><span className="mt-0.5">{tick}</span><div className="flex-1 min-w-0">{tag}{pr}<p className="text-sm" style={tx}>{t.title}</p>{t.notes && <p className="text-xs" style={{ color: C.t3 }}>{t.notes}</p>}<p className="text-[11px] mt-0.5" style={{ color: C.t2 }}>{t.cat} · {when}</p></div>{acts}</Card>
+<Card key={t.id} className="flex gap-3 items-start"><span className="mt-0.5">{tick}</span><div className="flex-1 min-w-0">{tag}{lk}{pr}<p className="text-sm" style={tx}>{t.title}</p>{t.notes && <p className="text-xs" style={{ color: C.t3 }}>{t.notes}</p>}<p className="text-[11px] mt-0.5" style={{ color: C.t2 }}>{t.cat} · {when}</p></div>{acts}</Card>
 );
 };
 const areaControls = (
@@ -543,7 +607,7 @@ const Areas = (
 );
 
 return (
-<div className={plat + (REAL ? "" : " min-h-screen flex flex-col items-center justify-center gap-3 p-4")} style={{ background: "#050608", color: C.t1, fontFamily: FONTS[plat] }}>
+<div className={plat + (REAL ? "" : " min-h-screen flex flex-col items-center justify-center gap-3 p-4")} style={{ background: C.deep, color: C.t1, fontFamily: FONTS[plat] }}>
 <style>{PCSS}</style>
 {!REAL && <div className="flex rounded-full p-1 text-xs font-semibold" style={{ background: C.card }}>{[["ios", "iOS"], ["android", "Android"]].map(([p, l]) => <button key={p} onClick={() => setPlat(p)} className="rounded-full px-4 py-1.5" style={{ background: plat === p ? C.blue : "transparent", color: plat === p ? "#fff" : C.t2 }}>{l}</button>)}</div>}
 <div className="zs relative overflow-hidden flex flex-col" style={rootStyle}>
@@ -553,7 +617,9 @@ return (
 <h1 style={{ fontSize: ios ? 22 : 20, fontWeight: ios ? 700 : 500, letterSpacing: ios ? "-0.02em" : 0 }}>ZenSchedule</h1>
 
 <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "#0084FF22", color: C.blue }}>ZenOx</span>
-<span className="ml-auto flex items-center gap-1 text-[10px] font-semibold" style={{ color: C.am }}><WifiOff size={12} />OFFLINE</span>
+<span className="ml-auto flex items-center gap-1 text-[10px] font-semibold" style={{ color: C.am }}><WifiOff size={12} /></span>
+<button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.card, color: C.blue }} aria-label="Toggle light or dark theme">{theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}</button>
+<button onClick={() => setExp(true)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.card, color: C.blue }} aria-label="Export Data (PDF/CSV)" title="Export Data (PDF/CSV)"><Download size={18} /></button>
 <button onClick={() => setScan({ stage: "pick", mode: "auto" })} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.card, color: C.blue }} aria-label="Scan document"><Camera size={18} /></button>
 <button onClick={() => { const n = new Date(); setMDate(isoOf(n)); setMHH(p2(n.getHours())); setMMM(p2(n.getMinutes())); setMSched(true); setMMode("form"); setMTried(false); setManual(true); }} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.blue }} aria-label="Quick add"><Plus size={18} color="#fff" /></button>
 </header>
@@ -569,7 +635,7 @@ return (
 </button>
 ); })}
 </nav>
-{frame && <span className="absolute left-1/2 -translate-x-1/2 rounded-full" style={{ zIndex: 26, bottom: ios ? 8 : 6, width: ios ? 134 : 108, height: ios ? 5 : 4, background: "#F3F5F7aa" }} />}
+{frame && <span className="absolute left-1/2 -translate-x-1/2 rounded-full" style={{ zIndex: 26, bottom: ios ? 8 : 6, width: ios ? 134 : 108, height: ios ? 5 : 4, background: "var(--t1)", opacity: 0.6 }} />}
 
 {cal && (() => {
 const lead = (new Date(cal.y, cal.m, 1).getDay() + 6) % 7;
@@ -626,7 +692,7 @@ return (
 {ed.mode === "resched" && <p className="text-sm">{ed.title}</p>}
 <div className="flex gap-2"><Chip on={ed.sched} onClick={() => setEd({ ...ed, sched: true })}>Scheduled</Chip><Chip on={!ed.sched} onClick={() => setEd({ ...ed, sched: false })}>Backlog</Chip></div>
 {ed.sched && <div className="flex gap-2 items-center">
-<input type="date" value={ed.date} onChange={(e) => setEd({ ...ed, date: e.target.value || TODAY_STR })} className="flex-1 min-w-0 rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1, colorScheme: "dark" }} />
+<input type="date" value={ed.date} onChange={(e) => setEd({ ...ed, date: e.target.value || TODAY_STR })} className="flex-1 min-w-0 rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1, colorScheme: theme }} />
 <select value={ed.hh} onChange={(e) => setEd({ ...ed, hh: e.target.value })} className="rounded-xl px-2 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }}>{Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0")).map((v) => <option key={v}>{v}</option>)}</select>
 <span style={{ color: C.t2 }}>:</span>
 <select value={ed.mm} onChange={(e) => setEd({ ...ed, mm: e.target.value })} className="rounded-xl px-2 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }}>{Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, "0")).map((v) => <option key={v}>{v}</option>)}</select>
@@ -672,7 +738,7 @@ return (
 <Sheet title="New task" onClose={() => setManual(false)}>
 <div className="flex gap-2"><Chip on={mMode === "form"} onClick={() => setMMode("form")}>Form</Chip><Chip on={mMode === "cmd"} onClick={() => setMMode("cmd")}>Quick command</Chip></div>
 {mMode === "cmd" && <>
-<input autoFocus value={cli} onChange={(e) => setCli(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && runCli()) setManual(false); }} placeholder="=PT Call bank, 2026-10-01 10:00, High Priority" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none font-mono" style={{ background: "#050608", color: C.em }} />
+<input autoFocus value={cli} onChange={(e) => setCli(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && runCli()) setManual(false); }} placeholder="=PT Call bank, 2026-10-01 10:00, High Priority" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none font-mono" style={{ background: C.deep, color: C.em }} />
 <div className="flex flex-wrap gap-1.5">{Object.keys(CODES).map((k) => <button key={k} onClick={() => setCli("=" + k + " ")} className="rounded-lg px-2.5 py-1.5 text-xs font-mono font-semibold" style={{ background: C.card, color: C.blue }}>={k}</button>)}</div>
 {preview ? (
 <Card className="space-y-1 text-xs">
@@ -688,6 +754,7 @@ return (
 {mMode === "form" && <>
 <div className="grid grid-cols-5 gap-1.5">{Object.keys(CODES).map((k) => <button key={k} onClick={() => setMCode(k)} className="rounded-lg py-2 text-xs font-mono font-semibold" style={{ background: mCode === k ? C.blue : C.card }}>{k}</button>)}</div>
 <p className="text-xs" style={{ color: C.t2 }}>{CODE_NAMES[mCode]} · {CODES[mCode]}</p>
+<div className="flex gap-2 overflow-x-auto pb-1">{QUICK.map(([l, c]) => <Chip key={l} on={mTitle === l} onClick={() => { setMTitle(l); setMCode(c); }}>{l}</Chip>)}</div>
 <input maxLength={LIM.title} value={mTitle} onChange={(e) => setMTitle(e.target.value)} placeholder="Task title (max 30)" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
 <div className="flex justify-between gap-2"><Err m={mErrs.title} /><span className="text-[11px] ml-auto shrink-0" style={{ color: mTitle.length >= LIM.title ? C.am : C.t3 }}>{mTitle.length}/{LIM.title}</span></div>
 <input maxLength={LIM.notes} value={mNotes} onChange={(e) => setMNotes(e.target.value)} placeholder="Notes (optional, max 90)" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
@@ -698,7 +765,7 @@ return (
 <Chip on={mKeys} onClick={() => setMKeys(!mKeys)}>Quantity</Chip>
 </div>
 <div className="flex gap-2 items-center">
-<input type="date" min={todayNow} value={mDate} onChange={(e) => setMDate(e.target.value || todayNow)} className="flex-1 min-w-0 rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1, colorScheme: "dark" }} />
+<input type="date" min={todayNow} value={mDate} onChange={(e) => setMDate(e.target.value || todayNow)} className="flex-1 min-w-0 rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1, colorScheme: theme }} />
 {mSched && <>
 <select value={mHH} onChange={(e) => setMHH(e.target.value)} className="rounded-xl px-2 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }}>{Array.from({ length: 24 }, (_, i) => p2(i)).map((v) => <option key={v} disabled={mDate === todayNow && +v < nowD.getHours()}>{v}</option>)}</select>
 <span style={{ color: C.t2 }}>:</span>
@@ -716,7 +783,10 @@ return (
 </>}
 </Sheet>
 )}
-{toast && <div className="absolute left-4 right-4 z-40 rounded-xl px-3 py-2 text-sm text-center" style={{ background: C.em, color: "#fff", bottom: "calc(var(--nh) + var(--sab) + 12px)" }}>{toast}</div>}
+{exp && <Sheet title="Export & Backup Schedule" onClose={() => setExp(false)}><p className="text-xs" style={{ color: C.t2 }}>Download your complete schedule, daily tasks, and medical logs in CSV or PDF format.</p><div className="grid grid-cols-2 gap-2"><button onClick={exportCsv} className="rounded-xl py-3 text-sm font-semibold" style={{ background: C.blue, color: "#fff" }}>Export CSV</button><button onClick={exportPdf} className="rounded-xl py-3 text-sm font-semibold" style={{ background: C.card, color: C.t1 }}>Export PDF</button></div></Sheet>}
+{alarm && <div className="absolute left-3 right-3 z-40 rounded-2xl p-3 border space-y-2" style={{ top: "calc(var(--top) + 8px)", background: C.card, borderColor: C.red, boxShadow: "0 6px 20px rgba(0,0,0,.35)" }}><div className="flex items-center gap-2"><span className="zs-ring"><Bell size={20} color={C.red} /></span><div className="flex-1 min-w-0"><p className="text-[10px] font-semibold" style={{ color: C.red }}>{alarm.kind.toUpperCase()} · {fmt(alarm.at)}</p><p className="text-sm truncate">{alarm.title}</p></div></div><div className="flex gap-2"><button onClick={() => { setSnz((x) => ({ ...x, [alarm.key]: nowMin + 15 })); flash("Snoozed until " + fmt(nowMin + 15)); }} className="flex-1 rounded-xl py-2 text-xs font-semibold" style={{ background: C.blue, color: "#fff" }}>Snooze 15 min</button><button onClick={() => setDis((x) => ({ ...x, [alarm.key]: 1 }))} className="flex-1 rounded-xl py-2 text-xs font-semibold" style={{ background: C.line, color: C.t1 }}>Dismiss</button></div></div>}
+{toast && <div className="absolute left-4 right-4 z-40 rounded-xl px-3 py-2 text-sm text-center" style={{ background: C.em, color: "#fff", bottom: "calc(var(--nh) + var(--sab) + " + (undo ? 68 : 12) + "px)" }}>{toast}</div>}
+{undo && <div key={undo.k} className="absolute left-4 right-4 z-40 rounded-xl overflow-hidden" style={{ background: "#1F2937", color: "#fff", bottom: "calc(var(--nh) + var(--sab) + 12px)" }}><div className="flex items-center gap-3 px-3 py-2.5"><span className="flex-1 min-w-0 truncate text-sm">“{undo.title}” completed</span><button onClick={undoDone} className="text-sm font-bold px-2 py-1" style={{ color: "#7CC0FF" }}>UNDO</button></div><div className="h-1" style={{ background: "#7CC0FF", animation: "zsShrink 5s linear forwards" }} /></div>}
 </div>
 </div>
 );

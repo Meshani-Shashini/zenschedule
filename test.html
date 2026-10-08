@@ -17,13 +17,16 @@
 :root,:root[data-theme=dark]{--bg:#0D0F12;--card:#181D24;--line:#22272E;--blue:#0084FF;--em:#10B981;--am:#F59E0B;--red:#EF4444;--t1:#F3F5F7;--t2:#8A93A3;--t3:#5C6472;--deep:#050608;--glass:rgba(13,15,18,.72);--hair:rgba(255,255,255,.1);--frame:#1a1d22}
 :root[data-theme=light]{--bg:#F4F6F9;--card:#FFFFFF;--line:#D3DAE5;--blue:#0072E0;--em:#047857;--am:#B45309;--red:#DC2626;--t1:#111827;--t2:#4B5563;--t3:#6B7280;--deep:#E4E8EF;--glass:rgba(244,246,249,.82);--hair:rgba(0,0,0,.12);--frame:#C5CBD6}
 [data-theme=light] .zs-card{border:1px solid var(--line);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+button,input,select{min-height:44px}button{min-width:44px}button svg{min-width:22px;min-height:22px}
+.text-xs{font-size:14px!important}.text-sm{font-size:16px!important;font-weight:600}.text-\[10px\]{font-size:12px!important}
+@keyframes zsPulse{0%{box-shadow:0 0 0 0 rgba(239,68,68,.6)}100%{box-shadow:0 0 0 18px rgba(239,68,68,0)}}
 </style>
 <script>try{document.documentElement.dataset.theme=localStorage.getItem("zs_theme")||"dark"}catch(e){}</script>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { useState, useMemo, useEffect } = React;
+const { useState, useMemo, useEffect, useRef } = React;
 const mk = (d) => ({ size = 24, color = "currentColor" }) => React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", style: { stroke: color }, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", dangerouslySetInnerHTML: { __html: d } });
 const CalendarClock = mk('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="16" r="3"/><path d="M12 15v1.5l1 .5"/>');
 const Terminal = mk('<path d="m4 17 6-6-6-6M12 19h8"/>');
@@ -50,6 +53,8 @@ const Sun = mk('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l
 const Moon = mk('<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/>');
 const Bell = mk('<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/>');
 const Download = mk('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>');
+const Mic = mk('<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/>');
+const Cloud = mk('<path d="M17.5 19H9a7 7 0 1 1 6.7-9h1.8a4.5 4.5 0 1 1 0 9z"/>');
 const List = mk('<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>');
 
 const C = { bg: "var(--bg)", card: "var(--card)", line: "var(--line)", blue: "var(--blue)", em: "var(--em)", am: "var(--am)", red: "var(--red)", t1: "var(--t1)", t2: "var(--t2)", t3: "var(--t3)", deep: "var(--deep)" };
@@ -64,6 +69,8 @@ const MEALS = [["Breakfast", 0], ["Lunch", 300], ["Dinner", 660], ["Bedtime", 90
 const fmt = (m) => { m = ((m % 1440) + 1440) % 1440; return String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0"); };
 const all7 = [1, 1, 1, 1, 1, 1, 1];
 
+// Developer setup: paste your Google OAuth Web Client ID here once. End-users never see or enter it.
+const GOOGLE_CLIENT_ID = "YOUR_CLIENT_ID.apps.googleusercontent.com";
 const LS_KEY = "zs_data_v1";
 const SAVED = (() => { try { return JSON.parse(localStorage.getItem(LS_KEY)) || {}; } catch (e) { return {}; } })();
 const MEDS = [
@@ -259,7 +266,33 @@ const [clock, setClock] = useState(new Date());
 const [theme, setTheme] = useState(() => { try { return localStorage.getItem("zs_theme") || "dark"; } catch (e) { return "dark"; } });
 const [undo, setUndo] = useState(null), [snz, setSnz] = useState(SAVED.snz || {}), [dis, setDis] = useState(SAVED.dis || {}), [exp, setExp] = useState(false), [taken, setTaken] = useState(SAVED.taken || {});
 useEffect(() => { document.documentElement.dataset.theme = theme; try { localStorage.setItem("zs_theme", theme); } catch (e) {} const m = document.querySelector("meta[name=theme-color]"); if (m) m.content = theme === "dark" ? "#0D0F12" : "#F4F6F9"; }, [theme]);
-useEffect(() => { try { localStorage.setItem(LS_KEY, JSON.stringify({ extras, backlog, done, taken, freq, shift, consultState, off, compact, snz, dis })); } catch (e) { console.warn("ZenSchedule: could not save", e); } }, [extras, backlog, done, taken, freq, shift, consultState, off, compact, snz, dis]);
+const [dv, setDv] = useState(() => { try { return JSON.parse(localStorage.getItem("zs_drive")) || {}; } catch (e) { return {}; } });
+const [dOpen, setDOpen] = useState(false), [dBusy, setDBusy] = useState(false), [dErr, setDErr] = useState(""), [listen, setListen] = useState(false);
+const tok = useRef(null), snap = useRef({}), savedAt = useRef(0), first = useRef(true), recRef = useRef(null);
+const patchDv = (p) => setDv((v) => { const n = { ...v, ...p }; try { localStorage.setItem("zs_drive", JSON.stringify(n)); } catch (e) {} return n; });
+useEffect(() => { if (first.current) { first.current = false; savedAt.current = SAVED.savedAt || 0; } else savedAt.current = Date.now(); const payload = { extras, backlog, done, taken, freq, shift, consultState, off, compact, snz, dis, savedAt: savedAt.current }; snap.current = payload; try { localStorage.setItem(LS_KEY, JSON.stringify(payload)); } catch (e) { console.warn("ZenSchedule: could not save", e); } }, [extras, backlog, done, taken, freq, shift, consultState, off, compact, snz, dis]);
+const loadGsi = (cb, er) => { if (window.google && window.google.accounts) return cb && cb(); const sc = document.createElement("script"); sc.src = "https://accounts.google.com/gsi/client"; sc.onload = () => cb && cb(); sc.onerror = () => er && er(new Error("Can't reach Google. Check your internet connection.")); document.head.appendChild(sc); };
+useEffect(() => { if (dOpen) loadGsi(); }, [dOpen]);
+const getToken = () => new Promise((res, rej) => {
+if (tok.current && tok.current.exp > Date.now() + 60000) return res(tok.current.t);
+if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID.startsWith("YOUR_CLIENT_ID")) return rej(new Error("Google Drive backup isn't available yet. Please contact the app provider."));
+loadGsi(() => { try { window.google.accounts.oauth2.initTokenClient({ client_id: GOOGLE_CLIENT_ID, scope: "https://www.googleapis.com/auth/drive.appdata", callback: (r) => { if (r.error) return rej(new Error(r.error_description || r.error)); tok.current = { t: r.access_token, exp: Date.now() + (r.expires_in || 3600) * 1000 }; res(r.access_token); }, error_callback: (e) => rej(new Error(e.type === "popup_closed" ? "Sign-in was cancelled." : "Sign-in failed. Allow pop-ups for Google sign-in."))}).requestAccessToken(); } catch (e) { rej(e); } }, rej);
+});
+const applyData = (d) => { setExtras(d.extras || []); setBacklog(d.backlog || []); setDone(d.done || {}); setTaken(d.taken || {}); if (d.freq) setFreq(d.freq); setShift(d.shift || 0); setConsultState(d.consultState || {}); setOff(d.off || {}); setCompact(!!d.compact); };
+const sync = async () => { setDBusy(true); setDErr(""); try {
+const H = { Authorization: "Bearer " + (await getToken()) }, API = "https://www.googleapis.com/", ok = (r) => { if (!r.ok) throw new Error("Google Drive error " + r.status + (r.status === 403 ? " (is the Drive API enabled?)" : "")); return r; };
+const q = await (await ok(await fetch(API + "drive/v3/files?spaces=appDataFolder&fields=files(id)&q=" + encodeURIComponent("name='zs_data_v1.json'"), { headers: H }))).json();
+const f = q.files && q.files[0], local = snap.current; let res = "Backed up";
+if (f) { const r = await (await ok(await fetch(API + "drive/v3/files/" + f.id + "?alt=media", { headers: H }))).json(); if (r && r.extras && (r.savedAt || 0) > (local.savedAt || 0)) { applyData(r); res = "Restored newer backup"; } else await ok(await fetch(API + "upload/drive/v3/files/" + f.id + "?uploadType=media", { method: "PATCH", headers: { ...H, "Content-Type": "application/json" }, body: JSON.stringify(local) })); }
+else { const b = "zsb", mp = "--" + b + "\r\nContent-Type: application/json\r\n\r\n" + JSON.stringify({ name: "zs_data_v1.json", parents: ["appDataFolder"] }) + "\r\n--" + b + "\r\nContent-Type: application/json\r\n\r\n" + JSON.stringify(local) + "\r\n--" + b + "--"; await ok(await fetch(API + "upload/drive/v3/files?uploadType=multipart", { method: "POST", headers: { ...H, "Content-Type": "multipart/related; boundary=" + b }, body: mp })); }
+patchDv({ linked: true, last: Date.now() }); flash(res + " · Google Drive");
+} catch (e) { setDErr(e.message || "Sync failed"); } finally { setDBusy(false); } };
+const driveOff = () => { try { window.google.accounts.oauth2.revoke(tok.current.t); } catch (e) {} tok.current = null; patchDv({ linked: false, last: null }); setDErr(""); };
+const connected = !!(tok.current && tok.current.exp > clock.getTime());
+const mins = dv.last ? Math.floor((clock.getTime() - dv.last) / 60000) : 0;
+const dStatus = connected ? "Connected to Google Drive • Synced " + (dv.last ? (mins < 1 ? "just now" : mins + " min ago") : "not yet") : dv.linked ? "Linked to Google Drive • Sign in again to sync" : "Not connected to Google Drive";
+useEffect(() => { if (!connected || dv.auto === false) return; const i = setTimeout(sync, 8000); return () => clearTimeout(i); }, [extras, backlog, done, taken, freq, shift, consultState, off]);
+const startVoice = () => { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) { flash("Voice input isn't supported in this browser. Try Chrome or Safari."); return; } if (listen) { recRef.current && recRef.current.stop(); return; } const r = new SR(); r.lang = navigator.language || "en-US"; r.interimResults = true; r.continuous = false; r.onstart = () => setListen(true); r.onresult = (e) => { const t = Array.from(e.results).map((x) => x[0].transcript).join(" ").trim(); setMTitle((t.charAt(0).toUpperCase() + t.slice(1)).slice(0, LIM.title)); const qk = QUICK.find(([l]) => l.toLowerCase() === t.toLowerCase()); if (qk) setMCode(qk[1]); }; r.onerror = (e) => { setListen(false); flash(e.error === "not-allowed" ? "Microphone blocked. Allow mic access in your browser settings." : "Didn't catch that. Please try again."); }; r.onend = () => setListen(false); recRef.current = r; try { r.start(); } catch (e) { setListen(false); } };
 useEffect(() => { if (!undo) return; const i = setTimeout(() => setUndo(null), 5000); return () => clearTimeout(i); }, [undo]);
 useEffect(() => { const i = setInterval(() => setClock(new Date()), 5000); return () => clearInterval(i); }, []);
 
@@ -437,24 +470,34 @@ const TaskRow = ({ t }) => (
 </button>
 );
 
+const stripRef = useRef(null), [stripBase, setStripBase] = useState(TODAY_STR);
+const stripDays = Array.from({ length: 91 }, (_, k) => addDays(stripBase, k - 45));
+useEffect(() => { if (stripDays.indexOf(selDate) < 5 || stripDays.indexOf(selDate) > 85) setStripBase(selDate); }, [selDate]);
+useEffect(() => { const el = stripRef.current, idx = stripDays.indexOf(selDate); if (!el || idx < 0) return; const pitch = el.scrollWidth / stripDays.length, left = (idx - 2) * pitch; if (pitch * idx < el.scrollLeft - 1 || pitch * (idx + 1) > el.scrollLeft + el.clientWidth + 1) el.scrollTo({ left, behavior: el.scrollWidth && el.dataset.ready ? "smooth" : "auto" }); el.dataset.ready = "1"; }, [selDate, stripBase]);
+const pageStrip = (dir) => { const el = stripRef.current; if (el) el.scrollBy({ left: dir * el.clientWidth, behavior: "smooth" }); };
 const dateBar = (
-<div className="flex items-center gap-1 pt-1 pb-2">
-<button onClick={() => setSelDate(addDays(selDate, -1))} aria-label="Previous day" className="w-6 h-12 shrink-0 rounded-lg flex items-center justify-center" style={{ background: C.card, color: C.t2 }}><ChevronLeft size={16} /></button>
-<div className="flex-1 min-w-0 flex gap-1">
-{[-3, -2, -1, 0, 1, 2, 3].map((o) => {
-const d = addDays(selDate, o), on = d === selDate, has = tasks.some((t) => t.date === d && !off[t.cat]);
-
+<div className="pt-1 pb-2 space-y-2">
+<div className="flex items-center gap-1">
+<button onClick={() => pageStrip(-1)} aria-label="Previous dates" className="w-8 h-16 shrink-0 rounded-xl flex items-center justify-center" style={{ background: C.card, color: C.t1 }}><ChevronLeft size={22} /></button>
+<div ref={stripRef} className="flex-1 min-w-0 flex gap-2 overflow-x-auto" style={{ scrollSnapType: "x mandatory", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+{stripDays.map((d) => {
+const on = d === selDate, has = tasks.some((t) => t.date === d && !off[t.cat]);
 return (
-<button key={d} onClick={() => setSelDate(d)} className="flex-1 min-w-0 h-12 rounded-xl flex flex-col items-center justify-center" style={{ background: on ? C.blue : C.card, color: on ? "#fff" : C.t2 }}>
-<span className="text-[9px] uppercase leading-none">{DAYS[(new Date(d + "T00:00:00").getDay() + 6) % 7]}</span>
-<span className="text-sm font-semibold tabular-nums leading-tight" style={{ color: on ? "#fff" : d === TODAY_STR ? C.blue : C.t1 }}>{d.slice(8)}</span>
-<span className="w-1 h-1 rounded-full" style={{ background: has ? (on ? "#fff" : C.em) : "transparent" }} />
+<button key={d} onClick={() => setSelDate(d)} aria-label={d} aria-pressed={on} className="h-16 rounded-xl flex flex-col items-center justify-center shrink-0" style={{ width: "calc((100% - 32px) / 5)", scrollSnapAlign: "start", background: on ? C.blue : C.card, color: on ? "#fff" : C.t2 }}>
+<span className="text-xs font-bold uppercase leading-none">{DAYS[(new Date(d + "T00:00:00").getDay() + 6) % 7]}</span>
+<span className="text-xl font-bold tabular-nums leading-tight" style={{ color: on ? "#fff" : d === todayNow ? C.blue : C.t1 }}>{d.slice(8)}</span>
+<span className="w-1.5 h-1.5 rounded-full" style={{ background: has ? (on ? "#fff" : C.em) : "transparent" }} />
 </button>
 );
 })}
 </div>
-<button onClick={() => setSelDate(addDays(selDate, 1))} aria-label="Next day" className="w-6 h-12 shrink-0 rounded-lg flex items-center justify-center" style={{ background: C.card, color: C.t2 }}><ChevronRight size={16} /></button>
-<button onClick={() => setCal({ y: +selDate.slice(0, 4), m: +selDate.slice(5, 7) - 1 })} aria-label="Open calendar" className="w-9 h-12 shrink-0 rounded-xl flex items-center justify-center" style={{ background: C.card, color: C.blue }}><CalendarDays size={18} /></button>
+<button onClick={() => pageStrip(1)} aria-label="Next dates" className="w-8 h-16 shrink-0 rounded-xl flex items-center justify-center" style={{ background: C.card, color: C.t1 }}><ChevronRight size={22} /></button>
+</div>
+<div className="flex items-center gap-2">
+<span className="flex-1 min-w-0 truncate text-sm font-semibold">{new Date(selDate + "T00:00:00").toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" })}</span>
+<button onClick={() => setCal({ y: +selDate.slice(0, 4), m: +selDate.slice(5, 7) - 1 })} aria-label="Open calendar" title="Open calendar" className="w-11 h-11 shrink-0 rounded-xl flex items-center justify-center" style={{ background: C.card, color: C.blue }}><CalendarDays size={22} /></button>
+{tab === "agenda" && <button onClick={() => setSecs(true)} aria-label="Show or hide sections" title="Show or hide sections" className="w-11 h-11 shrink-0 rounded-xl flex items-center justify-center" style={{ background: C.card, color: C.blue }}><Eye size={22} /></button>}
+</div>
 </div>
 );
 const agendaChips = (
@@ -463,7 +506,6 @@ const agendaChips = (
 {agendaCats.length > 0 && <Chip on={!selCat} onClick={() => setACat(null)}>All {todayTasks.filter((t) => !done[t.id]).length || "✓"}</Chip>}
 {agendaCats.map(([c, n]) => <Chip key={c} on={selCat === c} onClick={() => setACat(selCat === c ? null : c)}>{c} {n || "✓"}</Chip>)}
 </div>
-<button onClick={() => setSecs(true)} className="rounded-xl px-3 py-1.5 shrink-0" style={{ background: C.card, color: C.blue }} aria-label="Show or hide sections"><Eye size={16} /></button>
 </div>
 );
 const Agenda = (
@@ -613,16 +655,11 @@ return (
 <div className="zs relative overflow-hidden flex flex-col" style={rootStyle}>
 <div className="shrink-0" style={topBar}>
 {frame ? <StatusBar plat={plat} time={hh} /> : <div style={{ height: "var(--sb)" }} />}
-<header className="flex items-center gap-2 px-4" style={{ height: "var(--hh)" }}>
+<header className="flex items-center justify-between gap-2 px-4" style={{ height: "var(--hh)" }}>
 <h1 style={{ fontSize: ios ? 22 : 20, fontWeight: ios ? 700 : 500, letterSpacing: ios ? "-0.02em" : 0 }}>ZenSchedule</h1>
-
-<span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "#0084FF22", color: C.blue }}>ZenOx</span>
-<span className="ml-auto flex items-center gap-1 text-[10px] font-semibold" style={{ color: C.am }}><WifiOff size={12} /></span>
-<button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.card, color: C.blue }} aria-label="Toggle light or dark theme">{theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}</button>
-<button onClick={() => setExp(true)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.card, color: C.blue }} aria-label="Export Data (PDF/CSV)" title="Export Data (PDF/CSV)"><Download size={18} /></button>
-<button onClick={() => setScan({ stage: "pick", mode: "auto" })} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.card, color: C.blue }} aria-label="Scan document"><Camera size={18} /></button>
-<button onClick={() => { const n = new Date(); setMDate(isoOf(n)); setMHH(p2(n.getHours())); setMMM(p2(n.getMinutes())); setMSched(true); setMMode("form"); setMTried(false); setManual(true); }} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.blue }} aria-label="Quick add"><Plus size={18} color="#fff" /></button>
+<button onClick={() => { const n = new Date(); setMDate(isoOf(n)); setMHH(p2(n.getHours())); setMMM(p2(n.getMinutes())); setMSched(true); setMMode("form"); setMTried(false); setManual(true); }} className="h-11 pl-3 pr-4 rounded-full flex items-center gap-1 font-bold text-base shrink-0" style={{ background: C.blue, color: "#fff" }} aria-label="Quick add task"><Plus size={22} color="#fff" />Add</button>
 </header>
+<div className="px-4 pb-2 grid grid-cols-4 gap-2">{[[theme === "dark" ? <Sun size={24} /> : <Moon size={24} />, "Theme", () => setTheme(theme === "dark" ? "light" : "dark"), false, "Switch to " + (theme === "dark" ? "light" : "dark") + " theme"], [<Download size={24} />, "Export", () => setExp(true), false, "Export Data (PDF/CSV)"], [<Cloud size={24} />, "Drive", () => setDOpen(true), connected, "Google Drive backup"], [<Camera size={24} />, "Scan", () => setScan({ stage: "pick", mode: "auto" }), false, "Scan document"]].map(([ic, lb, fn, dot, al]) => <button key={lb} onClick={fn} aria-label={al} title={al} className="relative rounded-2xl flex flex-col items-center justify-center gap-0.5" style={{ background: C.card, color: C.t1, height: 64 }}><span style={{ color: C.blue }}>{ic}</span><span className="text-xs font-bold">{lb}</span>{dot && <span className="absolute top-1.5 right-2 w-2.5 h-2.5 rounded-full" style={{ background: C.em }} />}</button>)}</div>
 {(tab === "agenda" || tab === "health") && <div className="px-4">{dateBar}</div>}
 {tab === "agenda" && <div className="px-4">{agendaChips}</div>}
 {tab === "areas" && <div className="px-4 pt-1">{areaControls}</div>}
@@ -754,6 +791,7 @@ return (
 {mMode === "form" && <>
 <div className="grid grid-cols-5 gap-1.5">{Object.keys(CODES).map((k) => <button key={k} onClick={() => setMCode(k)} className="rounded-lg py-2 text-xs font-mono font-semibold" style={{ background: mCode === k ? C.blue : C.card }}>{k}</button>)}</div>
 <p className="text-xs" style={{ color: C.t2 }}>{CODE_NAMES[mCode]} · {CODES[mCode]}</p>
+<button onClick={startVoice} className="w-full rounded-2xl py-3 flex items-center justify-center gap-3 font-bold text-base" style={{ background: listen ? C.red : C.blue, color: "#fff", animation: listen ? "zsPulse 1s infinite" : "none" }} aria-label="Voice add"><span className={listen ? "zs-ring" : ""}><Mic size={28} color="#fff" /></span>{listen ? "Listening... speak now" : "🎙️ Voice Add: tap and speak"}</button>
 <div className="flex gap-2 overflow-x-auto pb-1">{QUICK.map(([l, c]) => <Chip key={l} on={mTitle === l} onClick={() => { setMTitle(l); setMCode(c); }}>{l}</Chip>)}</div>
 <input maxLength={LIM.title} value={mTitle} onChange={(e) => setMTitle(e.target.value)} placeholder="Task title (max 30)" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={{ background: C.card, color: C.t1 }} />
 <div className="flex justify-between gap-2"><Err m={mErrs.title} /><span className="text-[11px] ml-auto shrink-0" style={{ color: mTitle.length >= LIM.title ? C.am : C.t3 }}>{mTitle.length}/{LIM.title}</span></div>
@@ -783,6 +821,11 @@ return (
 </>}
 </Sheet>
 )}
+{dOpen && <Sheet title="Google Drive Backup" onClose={() => setDOpen(false)}><div className="rounded-xl p-3" style={{ background: C.card }}><p className="text-sm" style={{ color: connected ? C.em : C.t1 }}>{connected ? "● " : "○ "}{dStatus}</p></div>
+<button disabled={dBusy} onClick={sync} className="w-full rounded-xl py-3 text-base font-bold disabled:opacity-50" style={{ background: C.blue, color: "#fff" }}>{dBusy ? "Syncing..." : connected ? "Sync Now" : "Connect Google Drive"}</button>
+{dErr && <p className="text-xs" style={{ color: C.red }}>{dErr}</p>}
+{dv.linked && <div className="grid grid-cols-2 gap-2"><button onClick={() => patchDv({ auto: dv.auto === false })} className="rounded-xl py-3 text-sm font-semibold" style={{ background: C.card, color: C.t1 }}>Auto-sync: {dv.auto === false ? "Off" : "On"}</button><button onClick={driveOff} className="rounded-xl py-3 text-sm font-semibold" style={{ background: C.card, color: C.red }}>Disconnect</button></div>}
+<p className="text-xs" style={{ color: C.t2 }}>Sign in with your Google account to keep a private backup of your schedule. It is stored in a hidden app folder in your Google Drive and is used only by ZenSchedule.</p></Sheet>}
 {exp && <Sheet title="Export & Backup Schedule" onClose={() => setExp(false)}><p className="text-xs" style={{ color: C.t2 }}>Download your complete schedule, daily tasks, and medical logs in CSV or PDF format.</p><div className="grid grid-cols-2 gap-2"><button onClick={exportCsv} className="rounded-xl py-3 text-sm font-semibold" style={{ background: C.blue, color: "#fff" }}>Export CSV</button><button onClick={exportPdf} className="rounded-xl py-3 text-sm font-semibold" style={{ background: C.card, color: C.t1 }}>Export PDF</button></div></Sheet>}
 {alarm && <div className="absolute left-3 right-3 z-40 rounded-2xl p-3 border space-y-2" style={{ top: "calc(var(--top) + 8px)", background: C.card, borderColor: C.red, boxShadow: "0 6px 20px rgba(0,0,0,.35)" }}><div className="flex items-center gap-2"><span className="zs-ring"><Bell size={20} color={C.red} /></span><div className="flex-1 min-w-0"><p className="text-[10px] font-semibold" style={{ color: C.red }}>{alarm.kind.toUpperCase()} · {fmt(alarm.at)}</p><p className="text-sm truncate">{alarm.title}</p></div></div><div className="flex gap-2"><button onClick={() => { setSnz((x) => ({ ...x, [alarm.key]: nowMin + 15 })); flash("Snoozed until " + fmt(nowMin + 15)); }} className="flex-1 rounded-xl py-2 text-xs font-semibold" style={{ background: C.blue, color: "#fff" }}>Snooze 15 min</button><button onClick={() => setDis((x) => ({ ...x, [alarm.key]: 1 }))} className="flex-1 rounded-xl py-2 text-xs font-semibold" style={{ background: C.line, color: C.t1 }}>Dismiss</button></div></div>}
 {toast && <div className="absolute left-4 right-4 z-40 rounded-xl px-3 py-2 text-sm text-center" style={{ background: C.em, color: "#fff", bottom: "calc(var(--nh) + var(--sab) + " + (undo ? 68 : 12) + "px)" }}>{toast}</div>}

@@ -13,7 +13,7 @@ self.addEventListener("activate", (e) => {
 });
 self.addEventListener("fetch", (e) => {
   const r = e.request, u = new URL(r.url);
-  if (r.method !== "GET" || /google|gstatic|googleapis/.test(u.hostname) && !/fonts/.test(u.hostname)) return;
+  if (r.method !== "GET" || (/google|gstatic|googleapis/.test(u.hostname) && !/fonts/.test(u.hostname)) || /er-api/.test(u.hostname)) return;
   e.respondWith(caches.match(r, { ignoreSearch: true }).then((hit) => hit || fetch(r).then((res) => {
     if (res && (res.ok || res.type === "opaque")) { const cp = res.clone(); caches.open(CACHE).then((c) => c.put(r, cp)); }
     return res;
